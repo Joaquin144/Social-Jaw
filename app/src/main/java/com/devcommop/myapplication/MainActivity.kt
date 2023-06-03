@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import com.devcommop.myapplication.broadcastreceivers.AirplaneModeScreen
 import com.devcommop.myapplication.ui.components.SettingUpThroughScaffold
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
