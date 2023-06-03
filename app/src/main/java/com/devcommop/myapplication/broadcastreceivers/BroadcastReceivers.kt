@@ -1,4 +1,4 @@
-package com.devansh.myapplication.broadcastreceivers
+package com.devcommop.myapplication.broadcastreceivers
 
 import android.content.BroadcastReceiver
 import android.content.Context

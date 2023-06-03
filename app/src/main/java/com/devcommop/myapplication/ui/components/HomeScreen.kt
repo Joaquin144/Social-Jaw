@@ -1,4 +1,4 @@
-package com.devansh.myapplication.ui.components
+package com.devcommop.myapplication.ui.components
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

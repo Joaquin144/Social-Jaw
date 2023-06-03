@@ -1,4 +1,4 @@
-package com.devansh.myapplication.ui.theme
+package com.devcommop.myapplication.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

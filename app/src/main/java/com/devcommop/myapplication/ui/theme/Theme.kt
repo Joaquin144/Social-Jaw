@@ -1,4 +1,4 @@
-package com.devansh.myapplication.ui.theme
+package com.devcommop.myapplication.ui.theme
 
 import android.app.Activity
 import android.os.Build
