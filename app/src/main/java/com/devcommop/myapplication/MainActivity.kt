@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.devcommop.myapplication.broadcastreceivers.AirplaneModeScreen
-import com.devcommop.myapplication.ui.components.SettingUpThroughScaffold
+import com.devcommop.myapplication.ui.components.MainScreen
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,14 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    SettingUpThroughScaffold()
-                    AirplaneModeScreen()
-
-                }
+                MainScreen()
             }
         }
     }

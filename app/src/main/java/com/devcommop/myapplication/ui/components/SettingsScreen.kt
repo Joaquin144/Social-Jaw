@@ -10,19 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HomeScreen() {
+fun SettingsScreen() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Text("Home Screen")
+        Text("Settings Screen")
     }
 }
 
 @Preview
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+fun SettingsScreenPreview() {
+    SettingsScreen()
 }
