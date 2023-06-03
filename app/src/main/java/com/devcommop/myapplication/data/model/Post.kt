@@ -7,5 +7,8 @@ data class Post(
     var authorFullName: String? = "",
     var authorProfilePictureUrl: String? = null,
     var timestamp: String? = null,
-    var likesCount: Long = 0
+    var likesCount: Long = 0,
+    var textContent: String? = null,
+    var imagesUrl: String? = null,
+    var videourl: String? = null
 )
