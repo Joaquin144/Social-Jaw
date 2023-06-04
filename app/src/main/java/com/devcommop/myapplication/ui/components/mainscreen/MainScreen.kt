@@ -38,10 +38,11 @@ fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
     Scaffold(
         topBar = { TopBarSection(onSignOut) },
         bottomBar = { BottomBarSection(navController) },
-    ) {
-        BottomBarNavGraph(navHostController = navController)
-        val top = it.calculateTopPadding()
-        val bottom = it.calculateBottomPadding()
+    ) { innerPadding ->
+        BottomBarNavGraph(
+            modifier = Modifier.padding(innerPadding),
+            navHostController = navController
+        )
     }
 }
 

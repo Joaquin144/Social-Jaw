@@ -45,13 +45,15 @@ import com.devcommop.myapplication.data.model.SignInState
 @Composable
 fun LoginScreen(
     state: SignInState,
-    onSignInClick: () -> Unit
+    onSignInClick: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ) {
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val passwordState = remember { mutableStateOf(TextFieldValue()) }
     val buttonState = remember { mutableStateOf(ButtonState.Enabled) }
-
     val context = LocalContext.current
+
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { error ->
             Toast.makeText(
@@ -61,7 +63,6 @@ fun LoginScreen(
             ).show()
         }
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,8 +119,7 @@ fun LoginScreen(
             Text(
                 modifier = Modifier
                     .clickable {
-
-                        //navigate to forgotPasswordScreen
+                        onNavigateToForgotPassword()
                     },
                 text = "forgot password?",
                 color = Color.Black,
@@ -159,6 +159,13 @@ fun LoginScreen(
             text = "Sign in with Google",
             onSignInPressed = { onSignInClick() }
         )
+        Text(
+            modifier = Modifier.padding(vertical = 4.dp)
+                .clickable { onNavigateToRegister() },
+            text = "New User? Sign up",
+            color = Color.Black,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp
+        )
     }
 }
-
