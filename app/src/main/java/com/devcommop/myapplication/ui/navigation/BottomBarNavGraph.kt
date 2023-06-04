@@ -4,18 +4,19 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.devcommop.myapplication.ui.components.CreatePostScreen
-import com.devcommop.myapplication.ui.components.HomeScreen
-import com.devcommop.myapplication.ui.components.SettingsScreen
-import com.devcommop.myapplication.ui.components.ShortsScreen
-import com.devcommop.myapplication.ui.components.UserProfileScreen
+import com.devcommop.myapplication.ui.components.mainscreen.CreatePostScreen
+import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
+import com.devcommop.myapplication.ui.components.mainscreen.SettingsScreen
+import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
+import com.devcommop.myapplication.ui.components.mainscreen.UserProfileScreen
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
 @Composable
 fun BottomBarNavGraph(navHostController: NavHostController) {
     NavHost(
         navController = navHostController,
-        startDestination = BottomBarScreen.HomeScreen.route
+        startDestination = BottomBarScreen.HomeScreen.route,
+
     ) {
         composable(BottomBarScreen.HomeScreen.route) {
             HomeScreen()

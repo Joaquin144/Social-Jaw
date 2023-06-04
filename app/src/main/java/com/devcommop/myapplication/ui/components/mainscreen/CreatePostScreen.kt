@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components
+package com.devcommop.myapplication.ui.components.mainscreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,19 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun UserProfileScreen() {
+fun CreatePostScreen() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        Text("User Profile Screen")
+        Text("Create Post Screen")
     }
 }
 
 @Preview
 @Composable
-fun UserProfileScreenPreview() {
-    UserProfileScreen()
+fun PreviewCreatePostScreen() {
+    CreatePostScreen()
 }

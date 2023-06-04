@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components
+package com.devcommop.myapplication.ui.components.mainscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

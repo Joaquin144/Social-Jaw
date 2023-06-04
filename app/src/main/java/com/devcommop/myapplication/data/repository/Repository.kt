@@ -1,22 +1,10 @@
 package com.devcommop.myapplication.data.repository
 
-import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
-import com.devcommop.myapplication.data.model.User
-import com.devcommop.myapplication.utils.CommonUtils
-import com.devcommop.myapplication.utils.Constants
 import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import okhttp3.internal.immutableListOf
-import okhttp3.internal.toImmutableList
-import java.util.Arrays
 import javax.inject.Inject
 
 private const val TAG = "##@@Repository"
@@ -44,15 +32,16 @@ class Repository @Inject constructor(
      * @param postId The unique id of that [Post] which has to be searched for
      * @return A [Resource] of type [Post] that will either be a [Resource.Success] or [Resource.Error]
      */
+    /*
     suspend fun getPostById(postId: String): Resource<Post> {
         return withContext(Dispatchers.IO) {
             try {
                 val post =
                     firestore.collection(Constants.POSTS_COLLECTION).document(postId).get().await()
                         .toObject(Post::class.java)
-                if (post == null) {
-                    throw Exception(message = "Post was deleted by the author or removed by us for community guidelines violations")
-                }
+                        ?: throw Exception(
+                            message = "Post was deleted by the author or removed by us for community guidelines violations"
+                        )
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
                 Resource.Error<Post>(
@@ -62,7 +51,6 @@ class Repository @Inject constructor(
             }
         }
     }
-
     /**
      * This function takes a [String] object called [uid] and retrieves that [User] from Firebase Firestore Database
      * @param uid The unique id of that [User] which has to be searched
@@ -73,10 +61,7 @@ class Repository @Inject constructor(
             try {
                 val user =
                     firestore.collection(Constants.USERS_COLLECTION).document(uid).get().await()
-                        .toObject(User::class.java)
-                if (user == null) {
-                    throw Exception(message = "User account was deactivated/ deleted.")
-                }
+                        .toObject(User::class.java) ?: throw Exception(message = "User account was deactivated/ deleted.")
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
                 Resource.Error<User>(
@@ -343,4 +328,7 @@ class Repository @Inject constructor(
     suspend fun logInUser(user: User) {}
 
     suspend fun deactivateUser(user: User) {}
+
+        */
+
 }
