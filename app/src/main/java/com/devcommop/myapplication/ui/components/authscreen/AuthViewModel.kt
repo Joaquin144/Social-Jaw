@@ -1,8 +1,6 @@
 package com.devcommop.myapplication.ui.components.authscreen
 
 import androidx.lifecycle.ViewModel
-import com.devcommop.myapplication.data.model.SignInResult
-import com.devcommop.myapplication.data.model.SignInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.devcommop.myapplication.data.model.UserData
+import com.devcommop.myapplication.ui.components.authscreen.UserData
 
 @Composable
 fun HomeScreen(

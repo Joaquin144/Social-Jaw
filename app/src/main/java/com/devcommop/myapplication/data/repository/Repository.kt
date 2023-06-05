@@ -1,10 +1,19 @@
 package com.devcommop.myapplication.data.repository
 
+import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
+import com.devcommop.myapplication.data.model.User
+import com.devcommop.myapplication.utils.CommonUtils
+import com.devcommop.myapplication.utils.Constants
+import com.devcommop.myapplication.utils.CustomException
 import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 private const val TAG = "##@@Repository"
@@ -32,14 +41,13 @@ class Repository @Inject constructor(
      * @param postId The unique id of that [Post] which has to be searched for
      * @return A [Resource] of type [Post] that will either be a [Resource.Success] or [Resource.Error]
      */
-    /*
     suspend fun getPostById(postId: String): Resource<Post> {
         return withContext(Dispatchers.IO) {
             try {
                 val post =
                     firestore.collection(Constants.POSTS_COLLECTION).document(postId).get().await()
                         .toObject(Post::class.java)
-                        ?: throw Exception(
+                        ?: throw CustomException(
                             message = "Post was deleted by the author or removed by us for community guidelines violations"
                         )
                 Resource.Success<Post>(data = post)
@@ -61,7 +69,7 @@ class Repository @Inject constructor(
             try {
                 val user =
                     firestore.collection(Constants.USERS_COLLECTION).document(uid).get().await()
-                        .toObject(User::class.java) ?: throw Exception(message = "User account was deactivated/ deleted.")
+                        .toObject(User::class.java) ?: throw CustomException(message = "User account was deactivated/ deleted.")
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
                 Resource.Error<User>(
@@ -249,12 +257,81 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun commentOnPost(postId: String, user: User, comment: Comment): Resource<Post> {
-        return Resource.Error<Post>(message = "Functionality not yet implemented")
+    /**
+     * This function takes 3 objects of type [Post], [User], [Comment] and creates a [comment] on that [post] by the [user]
+     * @param post The object [Post] on which comment has to be created
+     * @param user The object [User] the user which is initiating the action
+     * @param comment The object [Comment] which has to be created
+     * @return A [Resource] of type [Comment] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun commentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {
+        //todo: Block offensive comments [ML or smth]
+        /*Aim: Ensure atomicity of this op which contains these transactions:----
+             i. Add this comment's id to user's comments' field ✅
+             ii. Add this comment's id to post's comments' field ✅
+             iii. Add this comment to Comments collection ✅
+             iv. Increasing commentsCount for this post ✅
+         */
+        return withContext(Dispatchers.IO) {
+            try {
+                val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
+                val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
+                if (comment.commentId == "")
+                    comment.commentId = CommonUtils.getAutoId()
+                val commentsRef = firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
+                firestore.runBatch { batch ->
+                    //todo: merge these ops to reduce billing
+                    batch.update(userRef, "comments", FieldValue.arrayUnion(comment.commentId))
+                    batch.update(postRef, "comments", FieldValue.arrayUnion(comment.commentId))
+                    batch.update(postRef, "commentsCount", FieldValue.increment(1))
+                    batch.set(commentsRef, comment)
+                }.await()
+                Resource.Success<Comment>(data = comment)
+            } catch (exception: Exception) {
+                Resource.Error<Comment>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be liked"
+                )
+            }
+        }
     }
 
-    suspend fun removeCommentOnPost(postId: String, commendId: String): Resource<Post> {
-        return Resource.Error<Post>(message = "Functionality not yet implemented")
+    /**
+     * This function takes 3 objects of type [Post], [User], [Comment] and deletes the [comment] on that [post] by the [user]
+     * @param post The object [Post] on which comment has to be deleted
+     * @param user The object [User] the user which is initiating the action
+     * @param comment The object [Comment] which has to be deleted
+     * @return A [Resource] of type [Comment] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun removeCommentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {
+        /*Aim: Ensure atomicity of this op which contains these transactions:----
+             i. Delete this comment's id to user's comments' field ✅
+             ii. Delete this comment's id to post's comments' field ✅
+             iii. Delete this comment to Comments collection ✅
+             iv. Decreasing commentsCount for this post ✅
+         */
+        return withContext(Dispatchers.IO) {
+            try {
+                val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
+                val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
+                if (comment.commentId == "")
+                    comment.commentId = CommonUtils.getAutoId()
+                val commentsRef = firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
+                firestore.runBatch { batch ->
+                    //todo: merge these ops to reduce billing
+                    batch.update(userRef, "comments", FieldValue.arrayRemove(comment.commentId))
+                    batch.update(postRef, "comments", FieldValue.arrayRemove(comment.commentId))
+                    batch.update(postRef, "commentsCount", FieldValue.increment(-1))//todo: ensure this is atleast 0 all times
+                    batch.delete(commentsRef)
+                }.await()
+                Resource.Success<Comment>(data = comment)
+            } catch (exception: Exception) {
+                Resource.Error<Comment>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be liked"
+                )
+            }
+        }
     }
 
     /**
@@ -298,9 +375,9 @@ class Repository @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val user = firestore.collection(Constants.USERS_COLLECTION).document(user.uid).get()
-                    .await().toObject<User>()
+                    .await().toObject(User::class.java)
                 if (user == null)
-                    throw Exception(message = "User cannot be found")
+                    throw CustomException(message = "User cannot be found")
                 var usersArray = user.followers
                 if (usersArray == null)
                     usersArray = emptyArray()
@@ -315,9 +392,74 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun followUser(userToFollow: User, userInitiatingAction: User) {}
+    /**
+     * This function causes [userInitiatingAction] to follow [userToFollow] on Database
+     * @param userToFollow of type [User] whose has to be followed
+     * @param userInitiatingAction of type [User] whose has initiated the action
+     * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun followUser(userToFollow: User, userInitiatingAction: User): Resource<User> {
+        /*Aim: Ensure atomicity of this op which contains these transactions:----
+             i. Add this user2's id to user1's followers field ✅
+             ii. Add this user1's id to user2's following field ✅
+             iii. Increasing followingCount field of user2 ✅
+             iv. Increasing followersCount field for user1 ✅
+         */
+        return withContext(Dispatchers.IO) {
+            try {
+                val user1Ref = firestore.collection(Constants.USERS_COLLECTION).document(userToFollow.uid)
+                val user2Ref = firestore.collection(Constants.USERS_COLLECTION).document(userInitiatingAction.uid)
+                firestore.runBatch { batch ->
+                    //todo: merge these ops to reduce billing
+                    batch.update(user1Ref, "followers", FieldValue.arrayUnion(userToFollow.uid))
+                    batch.update(user2Ref, "following", FieldValue.arrayUnion(userInitiatingAction.uid))
+                    batch.update(user2Ref, "followingCount", FieldValue.increment(1))
+                    batch.update(user1Ref, "followersCount", FieldValue.increment(1))
+                }.await()
+                Resource.Success<User>(data = userToFollow)
+            } catch (exception: Exception) {
+                Resource.Error<User>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be liked"
+                )
+            }
+        }
+    }
 
-    suspend fun unfollowUser(userToUnfollow: User, userInitiatingAction: User) {}
+    /**
+     * This function causes [userInitiatingAction] to unfollow [userToUnfollow] on Database
+     * @param userToUnfollow of type [User] whose has to be unfollowed
+     * @param userInitiatingAction of type [User] whose has initiated the action
+     * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun unfollowUser(userToUnfollow: User, userInitiatingAction: User) {
+        /*Aim: Ensure atomicity of this op which contains these transactions:----
+             i. Remove this user2's id to user1's followers field ✅
+             ii. Remove this user1's id to user2's following field ✅
+             iii. Decreasing followingCount field of user2
+             iv. Decreasing followersCount field for user1
+         */
+        return withContext(Dispatchers.IO) {
+            try {
+                val user1Ref = firestore.collection(Constants.USERS_COLLECTION).document(userToUnfollow.uid)
+                val user2Ref = firestore.collection(Constants.USERS_COLLECTION).document(userInitiatingAction.uid)
+                firestore.runBatch { batch ->
+                    //todo: merge these ops to reduce billing
+                    batch.update(user1Ref, "followers", FieldValue.arrayRemove(userInitiatingAction.uid))
+                    batch.update(user2Ref, "following", FieldValue.arrayRemove(userToUnfollow.uid))
+                    //todo: Make sure below fields don't get less than zero
+                    batch.update(user2Ref, "followingCount", FieldValue.increment(-1))
+                    batch.update(user1Ref, "followersCount", FieldValue.increment(-1))
+                }.await()
+                Resource.Success<User>(data = userToUnfollow)
+            } catch (exception: Exception) {
+                Resource.Error<User>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be liked"
+                )
+            }
+        }
+    }
 
     suspend fun signUpUser(user: User) {}
 
@@ -327,8 +469,23 @@ class Repository @Inject constructor(
 
     suspend fun logInUser(user: User) {}
 
-    suspend fun deactivateUser(user: User) {}
-
-        */
+    /**
+     * This function takes a [User] object called [user] and deactivates it on Database.
+     * @param user The object [User] which has to be deactivated
+     * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun deactivateUser(user: User): Resource<User> {
+        return withContext(Dispatchers.IO){
+            try {
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).update("isDeactivated", true).await()
+                Resource.Success<User>(data = user)
+            } catch (exception: Exception) {
+                Resource.Error<User>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
+    }
 
 }

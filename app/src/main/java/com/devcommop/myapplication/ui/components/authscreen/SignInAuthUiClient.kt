@@ -3,8 +3,6 @@ package com.devcommop.myapplication.ui.components.authscreen
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import com.devcommop.myapplication.data.model.SignInResult
-import com.devcommop.myapplication.data.model.UserData
 import com.devcommop.myapplication.utils.Constants.WEB_CLIENT_ID
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions

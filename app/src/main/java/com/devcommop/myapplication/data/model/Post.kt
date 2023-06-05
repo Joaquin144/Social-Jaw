@@ -1,6 +1,5 @@
 package com.devcommop.myapplication.data.model
 
-//Each Post will also have sub-collection POST_LIKES and POST_COMMENTS
 data class Post(
     var postId: String = "",
     var authorId: String = "",

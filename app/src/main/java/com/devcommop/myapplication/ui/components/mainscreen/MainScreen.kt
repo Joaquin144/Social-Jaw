@@ -27,7 +27,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devcommop.myapplication.R
-import com.devcommop.myapplication.data.model.UserData
+import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 

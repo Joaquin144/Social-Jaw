@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.data.model
+package com.devcommop.myapplication.ui.components.authscreen
 
 data class UserData(
     val userId: String,

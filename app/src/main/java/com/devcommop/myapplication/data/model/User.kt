@@ -12,7 +12,7 @@ data class User(
     var city: String? = null,
     var country: String? = null,//todo: Ensure that country is valid
     var interestedIn: String? = null,//  men/ women/ both/ neutral/ null
-    var dob: String? = null,
+    var dob: String? = null,//todo: divide it into month, day and year for better queries and engagement
     var phone: String? = null,//  +[CC] [PhNo]
     var bio: String? = null,//About this user
     var profilePictureUrl: String? = null,//profile picture of this user
@@ -25,6 +25,8 @@ data class User(
     var isDeactivated: Boolean? = false, //null means false
     var followers: Array<String>? = arrayOf(Constants.GLOBAL_FOLLOWER),//ids of all users who are following this user
     var following: Array<String>? = arrayOf(Constants.GLOBAL_FOLLOWER),//ids of all users which this user follows
+    var followersCount: Long? = 0,
+    var followingCount: Long? = 0,
     var posts: Array<String>? = null,//ids of all posts created by this user
     var likedPosts: Array<String>? = null,//ids of all posts this user has liked
     var dislikedPosts: Array<String>? = null,//ids of all posts this user has disliked
