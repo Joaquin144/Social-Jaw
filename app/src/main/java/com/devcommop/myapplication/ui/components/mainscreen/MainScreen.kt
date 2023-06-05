@@ -29,12 +29,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devcommop.myapplication.R
+import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
 @Composable
-fun MainScreen( onSignOut: () -> Unit) {
+fun MainScreen(userData : UserData?, onSignOut: () -> Unit) {
     val viewModel = viewModel<AuthViewModel>()
     val state by  viewModel.state.collectAsState()
     val navController = rememberNavController()
@@ -45,7 +46,7 @@ fun MainScreen( onSignOut: () -> Unit) {
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
         BottomBarNavGraph(
-            modifier = Modifier.padding(innerPadding), navHostController = navController
+            modifier = Modifier.padding(innerPadding), navHostController = navController, userData , onSignOut
         )
     }
 }
