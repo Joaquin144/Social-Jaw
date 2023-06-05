@@ -43,7 +43,7 @@ import com.devcommop.myapplication.R
 
 
 @Composable
-fun FacebookPostItem(
+fun PostItem(
 //    username: String,
 //    userProfileIcon: Painter = painterResource(R.drawable.dummy_profile_picture),
 //    timePosted: String,
@@ -57,18 +57,21 @@ fun FacebookPostItem(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         shape = RoundedCornerShape(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(2.dp , Color.LightGray)
+        colors = CardDefaults.cardColors(containerColor = Color.White.copy(.9f)),
+        border = BorderStroke(1.dp, Color.Black)
     ) {
         Column(
-            modifier = Modifier.padding( vertical = 4.dp)
+            modifier = Modifier.padding(vertical = 2.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
             ) {
                 Image(
                     painter = userProfileIcon,
@@ -81,13 +84,14 @@ fun FacebookPostItem(
                 Column {
                     Text(
                         text = username,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = timePosted,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
+                        color = Color.DarkGray
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -97,7 +101,8 @@ fun FacebookPostItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Options"
+                        contentDescription = "Options",
+                        tint = Color.Black
                     )
                 }
             }
@@ -118,14 +123,19 @@ fun FacebookPostItem(
             Text(
                 text = contentDescription,
                 style = MaterialTheme.typography.bodyMedium,
-                fontSize = 16.sp ,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+                fontSize = 16.sp,
+                color = Color.Black,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ActionButton(
@@ -174,11 +184,11 @@ fun ActionButton(
 
 @Preview(showBackground = true)
 @Composable
-fun FBPostItemPreview() {
-    FacebookPostItem(
-        username = "John Doe",
+fun PostItemPreview() {
+    PostItem(
+        username = "Anime Girl",
         userProfileIcon = painterResource(R.drawable.dummy_profile_picture),
-        timePosted = "2 hours ago",
+        timePosted = "just now",
         contentDescription = "Check out this amazing view!",
         postImage = painterResource(id = R.drawable.img)
     )

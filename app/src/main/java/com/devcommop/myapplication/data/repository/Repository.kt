@@ -461,7 +461,9 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun signUpUser(user: User) {}
+    suspend fun signUpUser(user: User) {
+
+    }
 
     suspend fun logOutUser(user: User) {
         auth.signOut()

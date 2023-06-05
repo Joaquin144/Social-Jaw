@@ -1,9 +1,9 @@
 package com.devcommop.myapplication.ui.components.mainscreen
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,6 +12,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,19 +36,23 @@ import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(userData : UserData?, onSignOut: () -> Unit) {
+fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
     val viewModel = viewModel<AuthViewModel>()
-    val state by  viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
-    Scaffold(
+   Scaffold(
         topBar = {
             TopBarSection(onSignOut)
         },
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
         BottomBarNavGraph(
-            modifier = Modifier.padding(innerPadding), navHostController = navController, userData , onSignOut
+            modifier = Modifier.padding(innerPadding),
+            navHostController = navController,
+            userData,
+            onSignOut
         )
     }
 }
@@ -57,31 +63,40 @@ fun MainScreen(userData : UserData?, onSignOut: () -> Unit) {
 fun TopBarSection(
     onSignOut: () -> Unit
 ) {
-    TopAppBar(title = {
-        Text(
-            text = stringResource(id = R.string.app_name),
-            fontWeight = FontWeight.SemiBold,
-            color = Color.Red,
-            fontFamily = FontFamily.Monospace
-        )
-    }, actions = {
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = "Search",
-            modifier = Modifier.padding(end = 4.dp)
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_comment_24),
-            contentDescription = "Message"
-        )
+    // scrollable TopAppBar code
+    val topAppBarScrollState = rememberTopAppBarState()
+    var scrollBehavior =
+        TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarScrollState, canScroll = { true })
 
-        Icon(painter = painterResource(id = R.drawable.baseline_exit_to_app_24),
-            contentDescription = "Log out",
-            modifier = Modifier.clickable {
-                onSignOut()
-            })
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                fontWeight = FontWeight.SemiBold,
+                color = Color.Red,
+                fontFamily = FontFamily.Monospace
+            )
+        },
+        actions = {
+            Icon(
+                // TODO: handle search icon click event
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 4.dp)
+            )
+            Icon(
+                // TODO: handle message icon click event
+                painter = painterResource(id = R.drawable.baseline_comment_24),
+                contentDescription = "Message",
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 4.dp)
 
-    }, scrollBehavior = null
+            )
+        },
+        scrollBehavior = scrollBehavior // scrollBehavior
     )
 
 }

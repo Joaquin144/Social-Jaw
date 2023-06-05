@@ -28,8 +28,7 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40,
 
     background = Color(0xFFFFFBFE),
-//    surface = Color(0xFFFFFBFE), // this is default surface color
-    surface = Color(0x59FFFFFF),
+    surface = Color(0xFFFFFBFE), // this is default surface color
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
