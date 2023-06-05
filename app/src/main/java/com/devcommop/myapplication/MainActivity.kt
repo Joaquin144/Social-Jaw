@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
 
                                 LoginScreen(
 //                                    state = state,
-                                    onSignInClick = performSignIn(navController ,launcher),
+                                    onSignInClick = performSignIn(launcher),
                                     onNavigateToForgotPassword = {
                                         navController.navigate(AuthScreen.ForgotPasswordScreen.route)
                                     },
@@ -151,7 +151,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 RegisterScreen(
                                     state = state,
-                                    onSignInClick = performSignIn(navController ,launcher)
+                                    onSignInClick = performSignIn(launcher)
                                 )
                             }
                             composable(route = AuthScreen.ForgotPasswordScreen.route) {
@@ -165,7 +165,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable("main_screen") {
                                 MainScreen(
-//                                    state = state ,
+                                    userData = viewModel.userData.collectAsState().value,
                                     onSignOut = {
                                         performSignOut(navController = navController)
                                         viewModel.onSignOutResult()
@@ -197,7 +197,7 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    private fun performSignIn(navController: NavHostController, launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>): () -> Unit =
+    private fun performSignIn(launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>): () -> Unit =
         {
             lifecycleScope.launch {
                 val signInIntentSender = googleAuthUiClient.signIn()

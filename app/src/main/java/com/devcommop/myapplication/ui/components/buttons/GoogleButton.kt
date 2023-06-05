@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.authscreen
+package com.devcommop.myapplication.ui.components.buttons
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +14,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.devcommop.myapplication.R
-
+import kotlinx.coroutines.delay
 
 @Composable
 fun GoogleSignInButton(
@@ -33,7 +36,7 @@ fun GoogleSignInButton(
     text : String  = "Sign In using Google",
     onSignInPressed: () -> Unit
 ) {
-    val signInButtonState = remember { mutableStateOf(ButtonState.Enabled) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier,
@@ -41,10 +44,10 @@ fun GoogleSignInButton(
     ) {
         Button(
             onClick = {
-                signInButtonState.value = ButtonState.Disabled
+                isLoading = true
                 onSignInPressed()
             },
-            enabled = signInButtonState.value == ButtonState.Enabled,
+            enabled  = !isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
@@ -70,13 +73,19 @@ fun GoogleSignInButton(
                     fontSize = 16.sp
                 )
 
-                if (signInButtonState.value == ButtonState.Disabled) {
+                if (isLoading) {
                     CircularProgressIndicator(
                         color = Color.White,
                         modifier = Modifier.size(24.dp),
                         strokeWidth = 2.dp
                     )
                 }
+            }
+        }
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+                delay(1000) // Simulating an asynchronous sign-out process
+                isLoading = false
             }
         }
     }
