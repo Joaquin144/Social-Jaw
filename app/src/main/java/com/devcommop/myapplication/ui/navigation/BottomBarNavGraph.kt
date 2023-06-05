@@ -6,15 +6,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.devcommop.myapplication.ui.components.authscreen.UserData
-import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePostScreen
 import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SettingsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.UserProfileScreen
+import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePostScreen
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
 @Composable
-fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController, userData : UserData?, onSignOut:()->  Unit) {
+fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController, userData : UserData? , onSignOut:()->  Unit) {
     NavHost(
         navController = navHostController,
         startDestination = BottomBarScreen.HomeScreen.route,
