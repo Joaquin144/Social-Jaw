@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -24,7 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CreatePostScreen(
-    //navController: NavController,
+    navController: NavController,
     viewModel: CreatePostViewModel = hiltViewModel()
 ) {
 
@@ -32,6 +34,7 @@ fun CreatePostScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+    //todo: Add Images and Video support also
     Surface() {
         Column(
             modifier = Modifier
@@ -53,6 +56,15 @@ fun CreatePostScreen(
                 singleLine = true,
                 textStyle = MaterialTheme.typography.headlineMedium
             )
+
+            Button(
+                shape = RoundedCornerShape(8.dp),
+                onClick = {
+                    viewModel.onEvent(CreatePostEvents.SubmitPost)
+                }
+            ) {
+                Text(text = "Add Post")
+            }
         }
     }
 
@@ -67,8 +79,8 @@ fun CreatePostScreen(
                 }
 
                 is CreatePostViewModel.UiEvent.PostUploadedSuccessfully -> {
-                    //todo: Move to the user's profile or navigateUp
-                    //navController.navigateUp()    //move to the previous screen
+                    //todo: [Decide] whether to move to the user's profile or navigateUp
+                    navController.navigateUp()    //move to the previous screen
                 }
             }
         }
@@ -79,5 +91,5 @@ fun CreatePostScreen(
 @Preview
 @Composable
 fun PreviewCreatePostScreen() {
-    CreatePostScreen()
+    //CreatePostScreen()
 }

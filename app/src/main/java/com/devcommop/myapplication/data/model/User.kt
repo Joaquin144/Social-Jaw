@@ -7,7 +7,7 @@ data class User(
     var userName: String = "",//todo: Ensure that userName is also unique to all users like uid
     var fullName: String? = null,//full name of the user may be null
     var gender: String? = "Prefer not to say",//gender of this user//todo: Limit size of Strings
-    var relationshipStatus: String? = null,//   married/ single/ divorced/ neutral/ null
+    var relationshipStatus: String? = null,//   married/ single/ divorced/ neutral/ dating/ engaged/ widow/ null
     var address: String? = null,
     var city: String? = null,
     var country: String? = null,//todo: Ensure that country is valid

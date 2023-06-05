@@ -4,7 +4,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.repository.Repository
+import com.devcommop.myapplication.utils.ModelUtils
+import com.devcommop.myapplication.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -60,22 +64,52 @@ class CreatePostViewModel @Inject constructor(
             }
 
             is CreatePostEvents.SubmitPost -> {
+                //todo: Make it with proper user rather than fake user
                 /*  Aim:-----
-                    i) Validate the Post is okay or not
-                    ii) Add meta-data to post and user both
-                    iii) Call repo function to upload post
-                    iv) Handle Success or Error results
-                    v) inform ui of UiEvent => PostSavedSuccessfully
+                    i) Validate the Post is okay or not ✅
+                    ii) Add meta-data to post and user both ✅
+                    iii) Call repo function to upload post ✅
+                    iv) Handle Success or Error results ✅
+                    v) inform ui of UiEvent => PostSavedSuccessfully ✅
                  */
                 viewModelScope.launch {
-                    //repository.addPost()
+                    if (!validatePost()) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = "Your Post is invalid"//todo: Show exact reason as to why it's invalid
+                            )
+                        )
+                        return@launch
+                    }
+                    val post = Post(textContent = postContent.value.text)
+                    val fakeUser = RuntimeQueries.fakeUser
+                    ModelUtils.associatePostToUser(post = post, user = fakeUser)
+                    //todo: [IMPORTANT!] Ensure that below line is execiuted fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
+                    val addStatus = repository.addPost(post, fakeUser)
+                    when (addStatus) {
+                        is Resource.Success -> {
+                            _eventFlow.emit(UiEvent.PostUploadedSuccessfully)
+                        }
+
+                        is Resource.Error -> {
+                            _eventFlow.emit(
+                                UiEvent.ShowSnackbar(
+                                    message = "Error in creating Post: " + addStatus.message
+                                )
+                            )
+                        }
+
+                        is Resource.Loading -> {}
+                    }
                 }
             }
         }
     }
 
-    private fun validatePost() {
-        //if ()
+    private fun validatePost(): Boolean {
+        if (postContent.value.text.isEmpty() || postContent.value.text.isBlank())
+            return false
+        return true
     }
 
     sealed class UiEvent() {
