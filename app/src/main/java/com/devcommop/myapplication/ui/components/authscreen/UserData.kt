@@ -1,7 +1,7 @@
 package com.devcommop.myapplication.ui.components.authscreen
 
 data class UserData(
-    val userId: String,
-    val username: String? ,
-    val profilePictureUrl: String?
+    val userId: String? = null ,
+    val username: String? = null ,
+    val profilePictureUrl: String? = null
 )

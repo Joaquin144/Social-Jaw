@@ -22,8 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,14 +45,16 @@ fun RegisterScreen(
     state: SignInState,
     onSignInClick: () -> Unit
 ) {
-    val nameState = remember { mutableStateOf(TextFieldValue()) }
-    val emailState = remember { mutableStateOf(TextFieldValue()) }
-    val passwordState = remember { mutableStateOf(TextFieldValue()) }
-    val buttonState = remember { mutableStateOf(ButtonState.Enabled) }
+    var nameState by remember { mutableStateOf(TextFieldValue()) }
+    var emailState by remember { mutableStateOf(TextFieldValue()) }
+    var passwordState by remember { mutableStateOf(TextFieldValue()) }
+    var buttonState by remember { mutableStateOf(ButtonState.Enabled) }
 
     val context = LocalContext.current
+
+    // if signInError is there, show toast
     LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let { error ->
+        state.signInError?.let { error : String ->
             Toast.makeText(
                 context,
                 error,
@@ -58,6 +62,7 @@ fun RegisterScreen(
             ).show()
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,13 +79,13 @@ fun RegisterScreen(
         )
 
         AnimatedVisibility(
-            visible = buttonState.value == ButtonState.Enabled,
+            visible = buttonState == ButtonState.Enabled,
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
             TextField(
-                value = nameState.value,
-                onValueChange = { nameState.value = it },
+                value = nameState,
+                onValueChange = { nameState = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -89,13 +94,13 @@ fun RegisterScreen(
         }
 
         AnimatedVisibility(
-            visible = buttonState.value == ButtonState.Enabled,
+            visible = buttonState == ButtonState.Enabled,
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
             TextField(
-                value = emailState.value,
-                onValueChange = { emailState.value = it },
+                value = emailState,
+                onValueChange = { emailState = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -107,13 +112,13 @@ fun RegisterScreen(
         }
 
         AnimatedVisibility(
-            visible = buttonState.value == ButtonState.Enabled,
+            visible = buttonState == ButtonState.Enabled,
             enter = fadeIn() + slideInVertically(),
             exit = fadeOut() + slideOutVertically()
         ) {
             TextField(
-                value = passwordState.value,
-                onValueChange = { passwordState.value = it },
+                value = passwordState,
+                onValueChange = { passwordState = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
@@ -127,16 +132,16 @@ fun RegisterScreen(
 
         Button(
             onClick = {
-                buttonState.value = ButtonState.Disabled
-                /* Handle registration logic */
+                buttonState = ButtonState.Disabled
+                // sign in logic
             },
-            enabled = buttonState.value == ButtonState.Enabled,
+            enabled = buttonState == ButtonState.Enabled,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             contentPadding = PaddingValues(12.dp)
         ) {
-            if (buttonState.value == ButtonState.Enabled) {
+            if (buttonState == ButtonState.Enabled) {
                 Text(text = "Sign Up")
             } else {
                 CircularProgressIndicator(

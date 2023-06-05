@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,15 +41,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.devcommop.myapplication.R
+import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    state: SignInState,
+//    state: SignInState,
     onSignInClick: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
+    val viewModel = viewModel<AuthViewModel>()
+    val state  by viewModel.state.collectAsState()
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val passwordState = remember { mutableStateOf(TextFieldValue()) }
     val buttonState = remember { mutableStateOf(ButtonState.Enabled) }
@@ -129,7 +135,7 @@ fun LoginScreen(
         Button(
             onClick = {
                 buttonState.value = ButtonState.Disabled
-                /* Handle login logic */
+                /* TODO: Handle login logic */
             },
             enabled = buttonState.value == ButtonState.Enabled,
             modifier = Modifier
@@ -159,7 +165,8 @@ fun LoginScreen(
             onSignInPressed = { onSignInClick() }
         )
         Text(
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier
+                .padding(vertical = 4.dp)
                 .clickable { onNavigateToRegister() },
             text = "New User? Sign up",
             color = Color.Black,

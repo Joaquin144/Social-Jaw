@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,27 +22,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devcommop.myapplication.R
-import com.devcommop.myapplication.ui.components.authscreen.UserData
+import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
+fun MainScreen( onSignOut: () -> Unit) {
+    val viewModel = viewModel<AuthViewModel>()
+    val state by  viewModel.state.collectAsState()
     val navController = rememberNavController()
     Scaffold(
-        topBar = { TopBarSection(onSignOut) },
+        topBar = {
+            TopBarSection(onSignOut)
+        },
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
         BottomBarNavGraph(
-            modifier = Modifier.padding(innerPadding),
-            navHostController = navController
+            modifier = Modifier.padding(innerPadding), navHostController = navController
         )
     }
 }
@@ -49,36 +53,34 @@ fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarSection(onSignOut: () -> Unit) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = R.string.app_name),
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Red,
-                fontFamily = FontFamily.Monospace
-            )
-        },
-        actions = {
-            Icon(
-                imageVector = Icons.Default.Search, contentDescription = "Search",
-                modifier = Modifier.padding(end = 4.dp)
-            )
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_comment_24),
-                contentDescription = "Message"
-            )
+fun TopBarSection(
+    onSignOut: () -> Unit
+) {
+    TopAppBar(title = {
+        Text(
+            text = stringResource(id = R.string.app_name),
+            fontWeight = FontWeight.SemiBold,
+            color = Color.Red,
+            fontFamily = FontFamily.Monospace
+        )
+    }, actions = {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "Search",
+            modifier = Modifier.padding(end = 4.dp)
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_comment_24),
+            contentDescription = "Message"
+        )
 
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_exit_to_app_24),
-                contentDescription = "Log out",
-                modifier = Modifier.clickable {
-                    onSignOut()
-                }
-            )
+        Icon(painter = painterResource(id = R.drawable.baseline_exit_to_app_24),
+            contentDescription = "Log out",
+            modifier = Modifier.clickable {
+                onSignOut()
+            })
 
-        },
-        scrollBehavior = null
+    }, scrollBehavior = null
     )
 
 }
@@ -86,7 +88,7 @@ fun TopBarSection(onSignOut: () -> Unit) {
 @Composable
 fun BottomBarSection(navController: NavHostController) {
     // list of all bottom bar screens
-    val screens = listOf<BottomBarScreen>(
+    val screens = listOf(
         BottomBarScreen.HomeScreen,
         BottomBarScreen.ShortsScreen,
         BottomBarScreen.CreatePostScreen,
@@ -111,14 +113,21 @@ fun BottomBarSection(navController: NavHostController) {
 
 @Composable
 fun RowScope.AddItem(
-    screen: BottomBarScreen,
-    currentDestination: NavDestination?,
-    navController: NavHostController
+    screen: BottomBarScreen, currentDestination: NavDestination?, navController: NavHostController
 ) {
-    NavigationBarItem(
-        enabled = true,
+    NavigationBarItem(enabled = true,
         label = { Text(text = screen.title) },
-        onClick = { navController.navigate(screen.route) },
+        onClick = {
+            navController.navigate(route = screen.route) {
+                //will pop up all the recently opened bottom bar screens from backstack
+                currentDestination?.route?.let {
+                    popUpTo(it) {
+                        inclusive = true
+                    }
+                }
+                launchSingleTop = true
+            }
+        },
         icon = { Icon(imageVector = screen.icon, contentDescription = screen.title) },
         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
