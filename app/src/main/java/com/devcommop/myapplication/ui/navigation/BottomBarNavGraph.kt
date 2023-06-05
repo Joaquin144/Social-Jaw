@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.devcommop.myapplication.ui.components.mainscreen.CreatePostScreen
+import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePostScreen
 import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SettingsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
