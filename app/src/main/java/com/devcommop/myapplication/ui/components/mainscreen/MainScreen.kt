@@ -3,6 +3,7 @@ package com.devcommop.myapplication.ui.components.mainscreen
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.*
@@ -53,7 +54,7 @@ fun MainScreen( onSignOut: () -> Unit) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
-            TopBarSection(onSignOut)
+            TopBarSection(navController , onSignOut)
         },
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
@@ -70,6 +71,7 @@ fun MainScreen( onSignOut: () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarSection(
+    navController: NavHostController,
     onSignOut: () -> Unit
 ) {
     // scrollable TopAppBar code
@@ -90,21 +92,24 @@ fun TopBarSection(
         },
         actions = {
             Icon(
-                // TODO: handle search icon click event
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 modifier = Modifier
                     .size(32.dp)
                     .padding(end = 4.dp)
+                    .clickable {
+                        navController.navigate("search_screen")
+                    }
             )
             Icon(
-                // TODO: handle message icon click event
                 painter = painterResource(id = R.drawable.baseline_comment_24),
                 contentDescription = "Message",
                 modifier = Modifier
                     .size(32.dp)
                     .padding(end = 4.dp)
-
+                    .clickable{
+                        navController.navigate("message_screen")
+                    }
             )
         },
         scrollBehavior = scrollBehavior // scrollBehavior

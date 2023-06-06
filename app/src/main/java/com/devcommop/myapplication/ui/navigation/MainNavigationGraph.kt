@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
+import com.devcommop.myapplication.ui.components.mainscreen.MessageScreen
+import com.devcommop.myapplication.ui.components.mainscreen.SearchScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SettingsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.UserProfileScreen
@@ -33,6 +35,12 @@ fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController,
         }
         composable(BottomBarScreen.SettingsScreen.route) {
             SettingsScreen(onSignOut = onSignOut)
+        }
+        composable("message_screen") {
+            MessageScreen()
+        }
+        composable("search_screen") {
+            SearchScreen()
         }
     }
 

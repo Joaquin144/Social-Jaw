@@ -11,26 +11,20 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -46,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.R
+import com.devcommop.myapplication.ui.components.buttons.RowScopedHorizontalButtonWithText
 import com.devcommop.myapplication.ui.components.mainscreen.common.TransparentHintTextField
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
@@ -135,13 +129,15 @@ fun CreatePostScreen() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    UploadIcon(Icons.Default.PhotoLibrary, onClick = {
+                    Spacer(Modifier.weight(1f))
+                    RowScopedHorizontalButtonWithText(icon = Icons.Default.PhotoLibrary, onClick = {
                         galleryUploadLauncher.launch("image/*")
                     }, text = "Gallery")
-                    UploadIcon(Icons.Default.CameraAlt, onClick = {
+                    RowScopedHorizontalButtonWithText(icon = Icons.Default.CameraAlt, onClick = {
                         val permissionCheckResult =
                             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
@@ -151,6 +147,8 @@ fun CreatePostScreen() {
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     }, text = "Camera")
+                    Spacer(Modifier.weight(1f))
+
                 }
             }
         }
@@ -195,46 +193,6 @@ fun Context.createImageFile(): File {
         externalCacheDir      /* directory */
     )
     return image
-}
-
-@Composable
-fun RowScope.UploadIcon(icon: ImageVector, onClick: () -> Unit, text: String) {
-    Card(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .weight(1f),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .height(32.dp)
-                .padding(vertical = 2.dp, horizontal = 8.dp)
-                .clickable(
-                    onClick = { onClick() }
-                ),
-            horizontalArrangement = Arrangement.SpaceAround,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-//            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                modifier = Modifier.padding(horizontal = 4.dp),
-                imageVector = icon,
-                contentDescription = "Upload Image",
-                tint = Color.Black
-            )
-            Text(
-                text = text,
-                color = Color.Black
-            )
-//            Spacer(modifier = Modifier.weight(1f))
-
-        }
-    }
-    Spacer(
-        modifier = Modifier
-            .width(2.dp)
-            .background(Color.DarkGray)
-    )
 }
 
 @Preview(showBackground = true)
