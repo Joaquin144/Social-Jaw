@@ -1,5 +1,6 @@
 package com.devcommop.myapplication
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -27,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.devcommop.myapplication.services.MyFirebaseMessagingService
 import com.devcommop.myapplication.ui.components.authscreen.ForgotPasswordScreen
 import com.devcommop.myapplication.ui.components.authscreen.GoogleAuthUiClient
 import com.devcommop.myapplication.ui.components.authscreen.LoginScreen
@@ -35,14 +37,19 @@ import com.devcommop.myapplication.ui.components.mainscreen.MainScreen
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.screens.AuthScreen
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
+import com.devcommop.myapplication.utils.Constants
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
+import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val TAG = "MAIN_ACTIVITY"
+    private val TAG = "##@@MainAct"
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = applicationContext,
@@ -52,6 +59,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupNotificationsFunctionality()
+
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -180,7 +190,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     private fun performSignOut(navController: NavHostController) = lifecycleScope.launch {
         googleAuthUiClient.signOut()
         Toast.makeText(
@@ -209,5 +218,20 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    private fun setupNotificationsFunctionality() {
+        MyFirebaseMessagingService.sharedPreferences = getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.d(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            // Aim: To get new FCM registration token
+            val token = task.result
+            MyFirebaseMessagingService.token = token
+        })
+
+        //Aim: Subscribe to the required topics
+        FirebaseMessaging.getInstance().subscribeToTopic(Constants.DEFAULT_FCM_TOPIC)
+    }
 }
 
