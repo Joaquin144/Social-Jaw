@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SettingsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
@@ -27,7 +26,7 @@ fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController,
             ShortsScreen()
         }
         composable(BottomBarScreen.CreatePostScreen.route) {
-            CreatePostScreen(navController = navHostController)
+            CreatePostScreen()
         }
         composable(BottomBarScreen.UserProfileScreen.route) {
             UserProfileScreen(onSignOut = onSignOut)

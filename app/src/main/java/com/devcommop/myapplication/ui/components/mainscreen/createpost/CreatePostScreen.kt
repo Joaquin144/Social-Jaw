@@ -5,6 +5,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,14 +30,18 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +56,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.R
 import com.devcommop.myapplication.ui.components.mainscreen.common.TransparentHintTextField
@@ -62,9 +66,10 @@ import java.util.Date
 import java.util.Objects
 
 @Composable
-fun CreatePostScreen(navController: NavController) {
-
+fun CreatePostScreen() {
+    val tag = "Image URI"
     val context = LocalContext.current
+    var postContent by remember { mutableStateOf("") }
     val file = context.createImageFile()
     val uri = FileProvider.getUriForFile(
         Objects.requireNonNull(context),
@@ -72,27 +77,37 @@ fun CreatePostScreen(navController: NavController) {
         "com.devcommop.myapplication.provider", file
     )
 
+    // this will store URI of image uploaded from Gallery
+    var uploadedImageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val galleryUploadLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri -> uploadedImageUri = uri }
+
+    // this will store URI of image captured from camera
     var capturedImageUri by remember {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
-
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         capturedImageUri = uri
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) {
-        if (it) {
+    ) { isPermissionGranted ->
+        if (isPermissionGranted) {
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
             cameraLauncher.launch(uri)
         } else {
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
-    var postContent by remember { mutableStateOf("") }
+
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+//            .verticalScroll(rememberScrollState(), enabled = true)
     ) {
         Row(
             modifier = Modifier
@@ -110,28 +125,21 @@ fun CreatePostScreen(navController: NavController) {
                     .padding(horizontal = 4.dp)
                     .clip(shape = MaterialTheme.shapes.small)
             )
-            Column() {
+            Column {
                 TextField(value = postContent,
                     onValueChange = { postContent = it },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
-//                colors = TextFieldDefaults.textFieldColors(
-//                    backgroundColor = Color.LightGray,
-//                    focusedIndicatorColor = Color.Transparent,
-//                    unfocusedIndicatorColor = Color.Transparent
-//                ),
-                    singleLine = true,
+                    singleLine = false,
                     placeholder = { Text(text = "Write a post...") })
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     UploadIcon(Icons.Default.PhotoLibrary, onClick = {
-                        Toast.makeText(
-                            context,
-                            "Upload from Gallery Pressed",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        galleryUploadLauncher.launch("image/*")
                     }, text = "Gallery")
                     UploadIcon(Icons.Default.CameraAlt, onClick = {
                         val permissionCheckResult =
@@ -148,9 +156,26 @@ fun CreatePostScreen(navController: NavController) {
         }
 
         if (capturedImageUri.path?.isNotEmpty() == true) {
+            Log.d(tag, "captured image: $capturedImageUri")
+            Text(
+                text = "Captured Image!!",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
             Image(
                 modifier = Modifier.padding(16.dp, 8.dp),
                 painter = rememberAsyncImagePainter(capturedImageUri),
+                contentDescription = null
+            )
+        }
+        if (uploadedImageUri?.path?.isNotEmpty() == true) {
+            Log.d(tag, "uploaded image: $uploadedImageUri.toString()")
+            Text(
+                text = "Uploaded Image!!",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Image(
+                modifier = Modifier.padding(16.dp, 8.dp),
+                painter = rememberAsyncImagePainter(uploadedImageUri),
                 contentDescription = null
             )
         }
@@ -172,13 +197,12 @@ fun Context.createImageFile(): File {
     return image
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowScope.UploadIcon(icon: ImageVector, onClick: () -> Unit, text: String) {
     Card(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .weight(1f) ,
+            .weight(1f),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
     ) {
         Row(
@@ -216,7 +240,7 @@ fun RowScope.UploadIcon(icon: ImageVector, onClick: () -> Unit, text: String) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    CreatePostScreen(navController = rememberNavController())
+    CreatePostScreen()
 }
 
 @Composable
@@ -229,7 +253,7 @@ fun CreatePostScreenOlder(
     val snackbarHostState = remember { SnackbarHostState() }
 
     //todo: Add Images and Video support also
-    Surface() {
+    Surface {
         Column(
             modifier = Modifier
                 .fillMaxSize()
