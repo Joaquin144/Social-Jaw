@@ -53,7 +53,7 @@ fun PostItem(
     userProfileIcon: Painter = painterResource(R.drawable.dummy_profile_picture),
     timePosted: String = "2 hours ago",
     contentDescription: String = "Check out this amazing view!",
-    postImage: Painter = painterResource(id = R.drawable.img)
+    postImage: Painter = painterResource(id = R.drawable.dummy_post_image)
 ) {
     Card(
         modifier = Modifier
@@ -190,6 +190,6 @@ fun PostItemPreview() {
         userProfileIcon = painterResource(R.drawable.dummy_profile_picture),
         timePosted = "just now",
         contentDescription = "Check out this amazing view!",
-        postImage = painterResource(id = R.drawable.img)
+        postImage = painterResource(id = R.drawable.dummy_post_image)
     )
 }
