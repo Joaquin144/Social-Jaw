@@ -7,8 +7,11 @@ import com.devcommop.myapplication.ui.components.authscreen.UserData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
+//@HiltViewModel
+//class AuthViewModel @Inject constructor() : ViewModel() {
+    class AuthViewModel @Inject constructor() : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()

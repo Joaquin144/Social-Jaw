@@ -40,8 +40,6 @@ import com.devcommop.myapplication.ui.theme.MyApplicationTheme
 import com.devcommop.myapplication.utils.Constants
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceIdReceiver
-import com.google.firebase.iid.internal.FirebaseInstanceIdInternal
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -70,6 +68,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     val viewModel = viewModel<AuthViewModel>()
+//                    val viewModel : AuthViewModel = hiltViewModel()
                     val state by viewModel.state.collectAsState()
                     var startDestination by remember { mutableStateOf(value = "auth") }
 
@@ -175,7 +174,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable("main_screen") {
                                 MainScreen(
-                                    userData = viewModel.userData.collectAsState().value,
+//                                    userData = viewModel.userData.collectAsState().value,
                                     onSignOut = {
                                         performSignOut(navController = navController)
                                         viewModel.onSignOutResult()

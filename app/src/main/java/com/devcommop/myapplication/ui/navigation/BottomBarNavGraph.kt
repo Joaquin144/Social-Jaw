@@ -14,7 +14,7 @@ import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePos
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
 @Composable
-fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController, userData : UserData? , onSignOut:()->  Unit) {
+fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController, onSignOut:()->  Unit) {
     NavHost(
         navController = navHostController,
         startDestination = BottomBarScreen.HomeScreen.route,
@@ -30,7 +30,7 @@ fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController,
             CreatePostScreen(navController = navHostController)
         }
         composable(BottomBarScreen.UserProfileScreen.route) {
-            UserProfileScreen(userData = userData,  onSignOut = onSignOut)
+            UserProfileScreen(onSignOut = onSignOut)
         }
         composable(BottomBarScreen.SettingsScreen.route) {
             SettingsScreen(onSignOut = onSignOut)

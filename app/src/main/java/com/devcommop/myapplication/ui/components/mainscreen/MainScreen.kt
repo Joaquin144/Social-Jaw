@@ -1,5 +1,7 @@
 package com.devcommop.myapplication.ui.components.mainscreen
 
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -19,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -31,18 +34,24 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devcommop.myapplication.R
-import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
+//fun MainScreen (userData: UserData?, onSignOut: () -> Unit, viewModel : AuthViewModel = hiltViewModel()) {
+
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
-    val viewModel = viewModel<AuthViewModel>()
+fun MainScreen( onSignOut: () -> Unit) {
+//    val viewModel = viewModel<AuthViewModel>()
+    val viewModel: AuthViewModel = viewModel(LocalContext.current as ComponentActivity)
+
     val state by viewModel.state.collectAsState()
+    val currentUser = viewModel.userData.collectAsState().value
+    Log.d("HiltChecking", currentUser.toString())
     val navController = rememberNavController()
-   Scaffold(
+    Scaffold(
         topBar = {
             TopBarSection(onSignOut)
         },
@@ -51,7 +60,7 @@ fun MainScreen(userData: UserData?, onSignOut: () -> Unit) {
         BottomBarNavGraph(
             modifier = Modifier.padding(innerPadding),
             navHostController = navController,
-            userData,
+//            userData,
             onSignOut
         )
     }
@@ -65,8 +74,10 @@ fun TopBarSection(
 ) {
     // scrollable TopAppBar code
     val topAppBarScrollState = rememberTopAppBarState()
-    var scrollBehavior =
-        TopAppBarDefaults.enterAlwaysScrollBehavior(state = topAppBarScrollState, canScroll = { true })
+    val scrollBehavior =
+        TopAppBarDefaults.enterAlwaysScrollBehavior(
+            state = topAppBarScrollState,
+            canScroll = { true })
 
     TopAppBar(
         title = {
