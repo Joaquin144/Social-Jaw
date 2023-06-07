@@ -32,14 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.devcommop.myapplication.R
+import coil.compose.rememberAsyncImagePainter
 
 
 @Composable
@@ -50,11 +48,16 @@ fun PostItem(
 //    contentDescription: String,
 //    postImage: Painter,
     username: String = "John Doe",
-    userProfileIcon: Painter = painterResource(R.drawable.dummy_profile_picture),
+    userProfileIcon: String? = "null",
     timePosted: String = "2 hours ago",
     contentDescription: String = "Check out this amazing view!",
-    postImage: Painter = painterResource(id = R.drawable.dummy_post_image)
+    postImage: List<String>? = null
 ) {
+
+    var imageUrl : String? = null
+    if(postImage.isNullOrEmpty() == false && postImage[0] != null){
+        imageUrl = postImage[0]
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,7 +77,7 @@ fun PostItem(
                     .padding(horizontal = 8.dp)
             ) {
                 Image(
-                    painter = userProfileIcon,
+                    painter = rememberAsyncImagePainter(model =userProfileIcon ) ,
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)
@@ -109,7 +112,7 @@ fun PostItem(
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
             Image(
-                painter = postImage,
+                painter = rememberAsyncImagePainter(postImage),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -187,9 +190,9 @@ fun ActionButton(
 fun PostItemPreview() {
     PostItem(
         username = "Anime Girl",
-        userProfileIcon = painterResource(R.drawable.dummy_profile_picture),
+        userProfileIcon = "null",
         timePosted = "just now",
         contentDescription = "Check out this amazing view!",
-        postImage = painterResource(id = R.drawable.dummy_post_image)
+        postImage = listOf("null")
     )
 }

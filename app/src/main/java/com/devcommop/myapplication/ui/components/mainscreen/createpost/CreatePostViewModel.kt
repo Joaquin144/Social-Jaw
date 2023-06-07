@@ -49,7 +49,9 @@ class CreatePostViewModel @Inject constructor(
 
             is CreatePostEvents.EnteredContent -> {
                 _postContent.value = postContent.value.copy(
-                    text = event.value
+                    text = event.value,
+                    imageUri = event.imageUri,
+                    isHintVisible = event.value.isBlank()
                 )
             }
 
@@ -76,23 +78,31 @@ class CreatePostViewModel @Inject constructor(
                  */
                 viewModelScope.launch {
                     Log.d(TAG, "SubmitPost Event: trying to submit post")
-                    if (!validatePost()) {
+                    if (!isPostValid()) {
                         Log.d(TAG, "SubmitPost Event: Oops post validation failed")
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
-                                message = "Your Post is invalid"//todo: Show exact reason as to why it's invalid
+                                message = "Unable to submit Post with no content!!"//todo: Show exact reason as to why it's invalid
                             )
                         )
                         return@launch
                     }
-                    val post = Post(textContent = postContent.value.text)
+
                     val user = RuntimeQueries.currentUser
                     if(user == null){
                         Log.d(TAG, "Fatal error:-- RuntimeQueries.currentUser is null")
                         return@launch
                     }
+                    val post = Post(
+                        textContent = postContent.value.text.trimEnd() ,
+                        imagesUrl = postContent.value.imageUri?.let {
+                        listOf(postContent.value.imageUri.toString())
+                    }?: emptyList(),
+                        authorId = user.uid
+                    )
                     ModelUtils.associatePostToUser(post = post, user = user)
                     //todo: [IMPORTANT!] Ensure that below line is executed fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
+                    Log.d(TAG, "SubmitPost Event: ${post.toString()} ${user.toString()}")
                     val addStatus = repository.addPost(post, user)
                     Log.d(TAG, "addStatus of repo call i.e. addPost is: ${addStatus.toString()}")
                     when (addStatus) {
@@ -115,10 +125,8 @@ class CreatePostViewModel @Inject constructor(
         }
     }
 
-    private fun validatePost(): Boolean {
-        if (postContent.value.text.isEmpty() || postContent.value.text.isBlank())
-            return false
-        return true
+    fun isPostValid(): Boolean {
+        return postContent.value.text.trimEnd().isNotEmpty() || postContent.value.imageUri != null
     }
 
     sealed class UiEvent() {

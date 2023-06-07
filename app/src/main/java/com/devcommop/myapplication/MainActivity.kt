@@ -23,8 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,7 +37,6 @@ import com.devcommop.myapplication.ui.components.authscreen.LoginScreen
 import com.devcommop.myapplication.ui.components.authscreen.RegisterScreen
 import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.mainscreen.MainScreen
-import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePostViewModel
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.screens.AuthScreen
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
@@ -75,7 +72,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setupNotificationsFunctionality()
-        loadRuntimeQueries()//todo: do only if the user is logged in
+        //loadRuntimeQueries()//todo: do only if the user is logged in
 
         setContent {
             MyApplicationTheme {
@@ -103,6 +100,8 @@ class MainActivity : ComponentActivity() {
 
                     if (userData != null) {
                         viewModel.updateUserData(userData)
+                        addUserToDatabase(userData!!)
+                        loadRuntimeQueries()
                         startDestination = "main"
                     } else {
                         Log.d(TAG, "OOPS the user gotten from googleAuthUiClient is null")
@@ -140,6 +139,7 @@ class MainActivity : ComponentActivity() {
                                     userData = googleAuthUiClient.getSignedInUser()
                                     if (userData != null) {
                                         addUserToDatabase(userData!!)
+                                        loadRuntimeQueries()
                                     } else {
                                         //todo: Show error and leave application
                                         Log.d(TAG, "omg userData is null bye bye")

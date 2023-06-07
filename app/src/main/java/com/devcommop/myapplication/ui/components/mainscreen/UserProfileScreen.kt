@@ -54,12 +54,14 @@ fun UserProfileScreen(
 //    userData : UserData?,
     onSignOut: () -> Unit
 ) {
+//    val viewModel: AuthViewModel = hiltViewModel()
     val viewModel: AuthViewModel = viewModel(LocalContext.current as ComponentActivity)
+
     val userData = viewModel.userData.collectAsState().value
     var showProgressBar by remember {
         mutableStateOf(false)
     }
-    val TAG = "USER_DATA_SCREEN"
+    val TAG = "##@@USER_DATA_SCREEN"
     val context = LocalContext.current
     Log.d(TAG, userData.toString())
 
@@ -209,6 +211,26 @@ fun UserProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
 
         }
+        viewModel.showAllPost()
+        val posts = viewModel.mUserPosts.collectAsState().value
+        Log.d(TAG , "posts fetched from db: ${posts.toString()}")
+//        LazyColumn(){
+//            items(posts.size){ index ->
+//                userData.username?.let { it1 ->
+//                    posts[index].textContent?.let {
+//                        posts[index].timestamp?.let { it2 ->
+//                            PostItem(
+//                                username = it1,
+//                                userProfileIcon = userData.profilePictureUrl,
+//                                timePosted = it2,
+//                                contentDescription = it,
+//                                postImage = posts[index].imagesUrl
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
 }

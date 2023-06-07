@@ -45,7 +45,7 @@ import com.devcommop.myapplication.ui.screens.BottomBarScreen
 
 @Composable
 fun MainScreen( onSignOut: () -> Unit) {
-//    val viewModel = viewModel<AuthViewModel>()
+//    val viewModel : AuthViewModel = hiltViewModel()
     val viewModel: AuthViewModel = viewModel(LocalContext.current as ComponentActivity)
 
     val state by viewModel.state.collectAsState()
@@ -107,7 +107,7 @@ fun TopBarSection(
                 modifier = Modifier
                     .size(32.dp)
                     .padding(end = 4.dp)
-                    .clickable{
+                    .clickable {
                         navController.navigate("message_screen")
                     }
             )

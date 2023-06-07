@@ -1,6 +1,7 @@
 package com.devcommop.myapplication.data.repository
 
 import android.util.Log
+import androidx.core.net.toUri
 import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.User
@@ -13,7 +14,6 @@ import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -135,6 +135,24 @@ class Repository @Inject constructor(
             try {
                 if (post.postId == "")
                     post.postId = CommonUtils.getAutoId()
+                post.imagesUrl?.let{ list ->
+                    if(list.isNotEmpty() && list[0] == null )
+                        list.dropLast(1)
+                }
+                var downloadUrl: String? = null
+                if(post.imagesUrl?.isNullOrEmpty() == false ){
+                    try {
+                        downloadUrl = storageReference.child("images/${post.postId}.jpg")
+                            .putFile(post.imagesUrl!![0].toUri()).await()
+                            .storage.downloadUrl.await().toString()
+                    } catch (e: Exception) {
+                        Log.d(TAG, "Error in uploading img to firebase cloud: $e")
+                    }
+                }
+                if(downloadUrl != null )
+                    post.imagesUrl = listOf(downloadUrl)
+                Log.d(TAG, "imageUrl @Cloud Firebase : ${downloadUrl.toString()}")
+                Log.d(TAG, "imageUrl in Post : ${post.imagesUrl.toString()}")
                 val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
                 val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
                 firestore.runBatch { batch ->
@@ -393,6 +411,7 @@ class Repository @Inject constructor(
                     }
                 Resource.Success<List<Post>>(data = postsList)
             } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
                 Resource.Error<List<Post>>(
                     message = exception.message
                         ?: "Unknown error occurred. The post couldn't be fetched"
