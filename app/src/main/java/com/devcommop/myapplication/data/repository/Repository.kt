@@ -128,8 +128,8 @@ class Repository @Inject constructor(
      */
     suspend fun addPost(post: Post, user: User): Resource<Post> {
         /*Aim: Ensure atomicity of this op which contains 2 transactions:----
-             i. Creating [Post] in POSTS collection and
-             ii. Adding postId to [User]
+             i. Creating [Post] in POSTS collection and ✅
+             ii. Adding postId to [User] ✅
          */
         return withContext(Dispatchers.IO) {
             try {

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.devcommop.myapplication.R
 import com.devcommop.myapplication.ui.components.buttons.GoogleSignInButton
@@ -53,7 +54,8 @@ fun LoginScreen(
     onNavigateToForgotPassword: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
-    val viewModel = viewModel<AuthViewModel>()
+    //val viewModel = viewModel<AuthViewModel>()
+    val viewModel: AuthViewModel = hiltViewModel()
     val state  by viewModel.state.collectAsState()
     val emailState = remember { mutableStateOf(TextFieldValue()) }
     val passwordState = remember { mutableStateOf(TextFieldValue()) }

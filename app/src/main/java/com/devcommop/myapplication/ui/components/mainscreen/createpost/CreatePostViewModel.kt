@@ -89,7 +89,7 @@ class CreatePostViewModel @Inject constructor(
                         return@launch
                     }
                     ModelUtils.associatePostToUser(post = post, user = user)
-                    //todo: [IMPORTANT!] Ensure that below line is execiuted fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
+                    //todo: [IMPORTANT!] Ensure that below line is executed fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
                     val addStatus = repository.addPost(post, user)
                     when (addStatus) {
                         is Resource.Success -> {

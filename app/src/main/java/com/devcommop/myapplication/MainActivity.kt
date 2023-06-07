@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -83,8 +84,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    val viewModel = viewModel<AuthViewModel>()
+                    //val viewModel = viewModel<AuthViewModel>()
 //                    val viewModel : AuthViewModel = hiltViewModel()
+                    val viewModel: AuthViewModel = hiltViewModel()
                     val state by viewModel.state.collectAsState()
                     var startDestination by remember { mutableStateOf(value = "auth") }
 
@@ -97,11 +99,13 @@ class MainActivity : ComponentActivity() {
                         "just at the start : onCreate: ${viewModel.userData.collectAsState().value.toString()}"
                     )
 
-                    val userData = googleAuthUiClient.getSignedInUser()
+                    var userData = googleAuthUiClient.getSignedInUser()
 
                     if (userData != null) {
                         viewModel.updateUserData(userData)
                         startDestination = "main"
+                    } else {
+                        Log.d(TAG, "OOPS the user gotten from googleAuthUiClient is null")
                     }
 
                     val launcher = rememberLauncherForActivityResult(
@@ -133,10 +137,12 @@ class MainActivity : ComponentActivity() {
                             composable(route = AuthScreen.LoginScreen.route) {
                                 LaunchedEffect(key1 = state.isSignInSuccessful) {
                                     //todo: Add user to database
+                                    userData = googleAuthUiClient.getSignedInUser()
                                     if (userData != null) {
-                                        addUserToDatabase(userData)
+                                        addUserToDatabase(userData!!)
                                     } else {
                                         //todo: Show error and leave application
+                                        Log.d(TAG, "omg userData is null bye bye")
                                     }
                                     if (state.isSignInSuccessful) {
                                         Toast.makeText(
@@ -282,7 +288,10 @@ class MainActivity : ComponentActivity() {
                 val status = repository.getUserById(uid)
                 when (status) {
                     is Resource.Success -> {
-                        Log.d(TAG, "Use fetched from db successfully. Now setting it as RuntimeQueries.currentUser")
+                        Log.d(
+                            TAG,
+                            "Use fetched from db successfully. Now setting it as RuntimeQueries.currentUser"
+                        )
                         RuntimeQueries.currentUser = status.data
                     }
 
