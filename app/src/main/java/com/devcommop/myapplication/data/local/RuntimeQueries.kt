@@ -4,7 +4,7 @@ import com.devcommop.myapplication.data.model.User
 
 class RuntimeQueries {
     companion object {
-        var user: User? = null
+        var currentUser: User? = null
 
         val fakeUser = User(
             uid = "I_am_fake_but_my_heart_is_real",

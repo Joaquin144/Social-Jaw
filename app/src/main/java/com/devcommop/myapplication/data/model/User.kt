@@ -21,6 +21,8 @@ data class User(
     var employmentStatus: String? = null,// Self-Employed / Job/ Business/ Unemployed / Intern / UnderAge
     var createdTimestamp: String? = null,// when was this user created
     var dateCreated: Long? = null,
+    var dayOfWeekCreated: Long? = null,
+    var monthCreated: Long? = null,
     var yearCreated: Long? = null,
     var isDeactivated: Boolean? = false, //null means false
     var followers: Array<String>? = arrayOf(Constants.GLOBAL_FOLLOWER),//ids of all users who are following this user

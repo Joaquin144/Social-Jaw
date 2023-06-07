@@ -1,5 +1,6 @@
 package com.devcommop.myapplication.ui.components.mainscreen.createpost
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -82,10 +83,14 @@ class CreatePostViewModel @Inject constructor(
                         return@launch
                     }
                     val post = Post(textContent = postContent.value.text)
-                    val fakeUser = RuntimeQueries.fakeUser
-                    ModelUtils.associatePostToUser(post = post, user = fakeUser)
+                    val user = RuntimeQueries.currentUser
+                    if(user == null){
+                        Log.d(TAG, "Fatal error:-- RuntimeQueries.currentUser is null")
+                        return@launch
+                    }
+                    ModelUtils.associatePostToUser(post = post, user = user)
                     //todo: [IMPORTANT!] Ensure that below line is execiuted fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
-                    val addStatus = repository.addPost(post, fakeUser)
+                    val addStatus = repository.addPost(post, user)
                     when (addStatus) {
                         is Resource.Success -> {
                             _eventFlow.emit(UiEvent.PostUploadedSuccessfully)

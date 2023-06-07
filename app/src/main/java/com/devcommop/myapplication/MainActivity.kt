@@ -22,32 +22,47 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.data.repository.Repository
 import com.devcommop.myapplication.services.MyFirebaseMessagingService
 import com.devcommop.myapplication.ui.components.authscreen.ForgotPasswordScreen
 import com.devcommop.myapplication.ui.components.authscreen.GoogleAuthUiClient
 import com.devcommop.myapplication.ui.components.authscreen.LoginScreen
 import com.devcommop.myapplication.ui.components.authscreen.RegisterScreen
+import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.mainscreen.MainScreen
+import com.devcommop.myapplication.ui.components.mainscreen.createpost.CreatePostViewModel
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.screens.AuthScreen
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
 import com.devcommop.myapplication.utils.Constants
+import com.devcommop.myapplication.utils.Resource
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val TAG = "##@@MainAct"
+
+    @Inject
+    lateinit var repository: Repository
+
+    @Inject
+    lateinit var auth: FirebaseAuth
+
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = applicationContext,
@@ -59,6 +74,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setupNotificationsFunctionality()
+        loadRuntimeQueries()//todo: do only if the user is logged in
 
         setContent {
             MyApplicationTheme {
@@ -116,6 +132,12 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(route = AuthScreen.LoginScreen.route) {
                                 LaunchedEffect(key1 = state.isSignInSuccessful) {
+                                    //todo: Add user to database
+                                    if (userData != null) {
+                                        addUserToDatabase(userData)
+                                    } else {
+                                        //todo: Show error and leave application
+                                    }
                                     if (state.isSignInSuccessful) {
                                         Toast.makeText(
                                             applicationContext,
@@ -189,6 +211,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun addUserToDatabase(userData: UserData) {
+        lifecycleScope.launch {
+            //todo: take repo from di rather than creating here
+            when (val addStatus = repository.addUser(userData = userData)) {
+                is Resource.Success -> {
+                    Log.d(TAG, "User created successfully in Database")
+                }
+
+                is Resource.Error -> {
+                    Log.d(TAG, "User creation in Database has failed: " + addStatus.message)
+                    Toast.makeText(this@MainActivity, addStatus.message, Toast.LENGTH_LONG).show()
+                    //todo: finish this activity & logout user as this is a serious error
+                }
+
+                is Resource.Loading -> {}
+            }
+        }
+    }
+
     private fun performSignOut(navController: NavHostController) = lifecycleScope.launch {
         googleAuthUiClient.signOut()
         Toast.makeText(
@@ -218,7 +259,8 @@ class MainActivity : ComponentActivity() {
         }
 
     private fun setupNotificationsFunctionality() {
-        MyFirebaseMessagingService.sharedPreferences = getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        MyFirebaseMessagingService.sharedPreferences =
+            getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.d(TAG, "Fetching FCM registration token failed", task.exception)
@@ -231,6 +273,28 @@ class MainActivity : ComponentActivity() {
 
         //Aim: Subscribe to the required topics
         FirebaseMessaging.getInstance().subscribeToTopic(Constants.DEFAULT_FCM_TOPIC)
+    }
+
+    private fun loadRuntimeQueries() {
+        val uid = auth.uid
+        if (uid != null) {
+            lifecycleScope.launch {
+                val status = repository.getUserById(uid)
+                when (status) {
+                    is Resource.Success -> {
+                        Log.d(TAG, "Use fetched from db successfully. Now setting it as RuntimeQueries.currentUser")
+                        RuntimeQueries.currentUser = status.data
+                    }
+
+                    is Resource.Error -> {
+                        Log.d(TAG, "User cannot be fetched from firestore database")
+                        //todo: finish this activity as this is a serious error
+                    }
+
+                    is Resource.Loading -> {}
+                }
+            }
+        }
     }
 }
 

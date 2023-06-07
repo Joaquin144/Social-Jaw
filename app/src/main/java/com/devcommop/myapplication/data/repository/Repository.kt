@@ -1,15 +1,19 @@
 package com.devcommop.myapplication.data.repository
 
+import android.util.Log
 import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.User
+import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.utils.CommonUtils
 import com.devcommop.myapplication.utils.Constants
 import com.devcommop.myapplication.utils.CustomException
+import com.devcommop.myapplication.utils.ModelUtils
 import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -37,6 +41,37 @@ class Repository @Inject constructor(
     private val storageReference = firebaseStorage.reference
 
     /**
+     * This function takes a [UserData] object called [userData] and creates that [User] in Firebase Firestore Database
+     * @param userData The very minimal data of user just created at Auth
+     * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun addUser(userData: UserData): Resource<User> {
+        /*Aim:--- Ensure these steps are followed
+            i) If if user already exists in database then just do "NOTHING". ✅
+            ii) Create User object and associate userData to it. ✅
+            iii) Create this user object in firestore database. ✅
+         */
+        return withContext(Dispatchers.IO) {
+            try {
+                val user = User()
+                ModelUtils.associateUserDataToUser(userData = userData, user = user)
+                val dbUser = firestore.collection(Constants.USERS_COLLECTION).document(user.uid).get().await().toObject(User::class.java)
+                if(dbUser != null){
+                    Log.d(TAG, "User was already created in DB. Not creating it again during SignIn")
+                    return@withContext Resource.Success<User> (data = dbUser)
+                }
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
+                Resource.Success<User>(data = user)
+            } catch (exception: Exception) {
+                Resource.Error<User>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
+    }
+
+    /**
      * This function takes a [String] object called [postId] and retrieves that [Post] from Firebase Firestore Database
      * @param postId The unique id of that [Post] which has to be searched for
      * @return A [Resource] of type [Post] that will either be a [Resource.Success] or [Resource.Error]
@@ -59,6 +94,7 @@ class Repository @Inject constructor(
             }
         }
     }
+
     /**
      * This function takes a [String] object called [uid] and retrieves that [User] from Firebase Firestore Database
      * @param uid The unique id of that [User] which has to be searched
@@ -69,7 +105,8 @@ class Repository @Inject constructor(
             try {
                 val user =
                     firestore.collection(Constants.USERS_COLLECTION).document(uid).get().await()
-                        .toObject(User::class.java) ?: throw CustomException(message = "User account was deactivated/ deleted.")
+                        .toObject(User::class.java)
+                        ?: throw CustomException(message = "User account was deactivated/ deleted.")
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
                 Resource.Error<User>(
@@ -278,7 +315,8 @@ class Repository @Inject constructor(
                 val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
                 if (comment.commentId == "")
                     comment.commentId = CommonUtils.getAutoId()
-                val commentsRef = firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
+                val commentsRef =
+                    firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
                 firestore.runBatch { batch ->
                     //todo: merge these ops to reduce billing
                     batch.update(userRef, "comments", FieldValue.arrayUnion(comment.commentId))
@@ -316,12 +354,17 @@ class Repository @Inject constructor(
                 val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
                 if (comment.commentId == "")
                     comment.commentId = CommonUtils.getAutoId()
-                val commentsRef = firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
+                val commentsRef =
+                    firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
                 firestore.runBatch { batch ->
                     //todo: merge these ops to reduce billing
                     batch.update(userRef, "comments", FieldValue.arrayRemove(comment.commentId))
                     batch.update(postRef, "comments", FieldValue.arrayRemove(comment.commentId))
-                    batch.update(postRef, "commentsCount", FieldValue.increment(-1))//todo: ensure this is atleast 0 all times
+                    batch.update(
+                        postRef,
+                        "commentsCount",
+                        FieldValue.increment(-1)
+                    )//todo: ensure this is atleast 0 all times
                     batch.delete(commentsRef)
                 }.await()
                 Resource.Success<Comment>(data = comment)
@@ -407,12 +450,18 @@ class Repository @Inject constructor(
          */
         return withContext(Dispatchers.IO) {
             try {
-                val user1Ref = firestore.collection(Constants.USERS_COLLECTION).document(userToFollow.uid)
-                val user2Ref = firestore.collection(Constants.USERS_COLLECTION).document(userInitiatingAction.uid)
+                val user1Ref =
+                    firestore.collection(Constants.USERS_COLLECTION).document(userToFollow.uid)
+                val user2Ref = firestore.collection(Constants.USERS_COLLECTION)
+                    .document(userInitiatingAction.uid)
                 firestore.runBatch { batch ->
                     //todo: merge these ops to reduce billing
                     batch.update(user1Ref, "followers", FieldValue.arrayUnion(userToFollow.uid))
-                    batch.update(user2Ref, "following", FieldValue.arrayUnion(userInitiatingAction.uid))
+                    batch.update(
+                        user2Ref,
+                        "following",
+                        FieldValue.arrayUnion(userInitiatingAction.uid)
+                    )
                     batch.update(user2Ref, "followingCount", FieldValue.increment(1))
                     batch.update(user1Ref, "followersCount", FieldValue.increment(1))
                 }.await()
@@ -441,11 +490,17 @@ class Repository @Inject constructor(
          */
         return withContext(Dispatchers.IO) {
             try {
-                val user1Ref = firestore.collection(Constants.USERS_COLLECTION).document(userToUnfollow.uid)
-                val user2Ref = firestore.collection(Constants.USERS_COLLECTION).document(userInitiatingAction.uid)
+                val user1Ref =
+                    firestore.collection(Constants.USERS_COLLECTION).document(userToUnfollow.uid)
+                val user2Ref = firestore.collection(Constants.USERS_COLLECTION)
+                    .document(userInitiatingAction.uid)
                 firestore.runBatch { batch ->
                     //todo: merge these ops to reduce billing
-                    batch.update(user1Ref, "followers", FieldValue.arrayRemove(userInitiatingAction.uid))
+                    batch.update(
+                        user1Ref,
+                        "followers",
+                        FieldValue.arrayRemove(userInitiatingAction.uid)
+                    )
                     batch.update(user2Ref, "following", FieldValue.arrayRemove(userToUnfollow.uid))
                     //todo: Make sure below fields don't get less than zero
                     batch.update(user2Ref, "followingCount", FieldValue.increment(-1))
@@ -477,9 +532,10 @@ class Repository @Inject constructor(
      * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
      */
     suspend fun deactivateUser(user: User): Resource<User> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             try {
-                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).update("isDeactivated", true).await()
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
+                    .update("isDeactivated", true).await()
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
                 Resource.Error<User>(

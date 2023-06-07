@@ -2,6 +2,9 @@ package com.devcommop.myapplication.utils
 
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.User
+import com.devcommop.myapplication.ui.components.authscreen.UserData
+import java.time.LocalDateTime
+import java.util.Calendar
 
 class ModelUtils {
     companion object {
@@ -22,6 +25,24 @@ class ModelUtils {
                 dislikesCount = 0
                 commentsCount = 0
                 textContent = post.textContent
+            }
+        }
+
+        fun associateUserDataToUser(userData: UserData, user: User) {
+            //todo: replace non-null assertions by throwing custom exceptions
+            val calendar = Calendar.getInstance()
+            user.apply {
+                uid = userData.userId!!
+                userName = userData.username?:CommonUtils.getAutoId().substring(10)//todo: give appropriate userName rather than wierd substrings
+                profilePictureUrl = userData.profilePictureUrl
+                createdTimestamp = System.currentTimeMillis().toString()
+                dateCreated = calendar.get(Calendar.DAY_OF_MONTH).toLong()
+                dayOfWeekCreated = calendar.get(Calendar.DAY_OF_WEEK).toLong()
+                monthCreated = calendar.get(Calendar.MONTH).toLong()
+                yearCreated = calendar.get(Calendar.YEAR).toLong()
+                isDeactivated = false
+                followersCount = 0
+                followingCount = 0
             }
         }
     }
