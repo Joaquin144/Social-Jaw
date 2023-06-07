@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
@@ -48,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.R
@@ -60,10 +62,10 @@ import java.util.Date
 import java.util.Objects
 
 @Composable
-fun CreatePostScreen() {
+fun CreatePostScreen(viewModel: CreatePostViewModel = hiltViewModel()) {
     val tag = "Image URI"
     val context = LocalContext.current
-    var postContent by remember { mutableStateOf("") }
+    val contentState = viewModel.postContent.value
     val file = context.createImageFile()
     val uri = FileProvider.getUriForFile(
         Objects.requireNonNull(context),
@@ -120,8 +122,8 @@ fun CreatePostScreen() {
                     .clip(shape = MaterialTheme.shapes.small)
             )
             Column {
-                TextField(value = postContent,
-                    onValueChange = { postContent = it },
+                TextField(value = contentState.text,
+                    onValueChange = { viewModel.onEvent(CreatePostEvents.EnteredContent(it)) },
                     modifier = Modifier.fillMaxWidth(),
                     textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
                     singleLine = false,
@@ -147,8 +149,12 @@ fun CreatePostScreen() {
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     }, text = "Camera")
-                    Spacer(Modifier.weight(1f))
-
+                    Spacer(Modifier.width(8.dp))
+                    Button(shape = RoundedCornerShape(8.dp), onClick = {
+                        viewModel.onEvent(CreatePostEvents.SubmitPost)
+                    }) {
+                        Text(text = "Add Post")
+                    }
                 }
             }
         }

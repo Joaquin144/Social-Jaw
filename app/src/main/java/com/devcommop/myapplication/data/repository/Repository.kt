@@ -143,6 +143,7 @@ class Repository @Inject constructor(
                 }.await()
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
+                Log.d(TAG, "addPost: $exception")
                 Resource.Error<Post>(
                     message = exception.message
                         ?: "Unknown error occurred. The post couldn't be created."
@@ -421,11 +422,8 @@ class Repository @Inject constructor(
                     .await().toObject(User::class.java)
                 if (user == null)
                     throw CustomException(message = "User cannot be found")
-                var usersArray = user.followers
-                if (usersArray == null)
-                    usersArray = emptyArray()
-                val usersList = usersArray.toList()
-                Resource.Success<List<String>>(data = usersList)
+                val usersList = user.followers
+                Resource.Success<List<String>>(data = usersList?: emptyList())//(data = usersList)
             } catch (exception: Exception) {
                 Resource.Error<List<String>>(
                     message = exception.message

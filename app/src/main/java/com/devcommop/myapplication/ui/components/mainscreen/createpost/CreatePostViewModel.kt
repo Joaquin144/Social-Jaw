@@ -35,6 +35,7 @@ class CreatePostViewModel @Inject constructor(
     val event = _eventFlow.asSharedFlow()
 
     init {
+        Log.d(TAG, "RuntimeQueries.currentUser: ${RuntimeQueries.currentUser}")
         //todo: ask/ check for camera, gallery permissions
     }
 
@@ -74,7 +75,9 @@ class CreatePostViewModel @Inject constructor(
                     v) inform ui of UiEvent => PostSavedSuccessfully ✅
                  */
                 viewModelScope.launch {
+                    Log.d(TAG, "SubmitPost Event: trying to submit post")
                     if (!validatePost()) {
+                        Log.d(TAG, "SubmitPost Event: Oops post validation failed")
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
                                 message = "Your Post is invalid"//todo: Show exact reason as to why it's invalid
@@ -91,6 +94,7 @@ class CreatePostViewModel @Inject constructor(
                     ModelUtils.associatePostToUser(post = post, user = user)
                     //todo: [IMPORTANT!] Ensure that below line is executed fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
                     val addStatus = repository.addPost(post, user)
+                    Log.d(TAG, "addStatus of repo call i.e. addPost is: ${addStatus.toString()}")
                     when (addStatus) {
                         is Resource.Success -> {
                             _eventFlow.emit(UiEvent.PostUploadedSuccessfully)
