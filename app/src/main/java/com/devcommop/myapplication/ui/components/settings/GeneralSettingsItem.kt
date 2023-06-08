@@ -16,7 +16,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -88,7 +87,7 @@ fun GeneralSettingsItem(icon: Int, mainText: String, subText: String, onClick: (
             Icon(
                 painter = painterResource(id = R.drawable.ic_right_arrow),
                 contentDescription = "",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.padding(horizontal = 2.dp).size(16.dp)
             )
 
         }

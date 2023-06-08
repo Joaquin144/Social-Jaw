@@ -16,15 +16,15 @@ import androidx.compose.ui.unit.sp
 import com.devcommop.myapplication.R
 
 @Composable
-fun HeaderText() {
+fun HeaderText(text : String = "Username") {
     Text(
-        text = "Settings",
+        text = text ,
         fontFamily = FontFamily(Font(R.font.poppins)),
         color = MaterialTheme.colorScheme.secondary,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 30.dp, bottom = 10.dp),
+            .padding(vertical = 10.dp),
         fontWeight = FontWeight.ExtraBold,
         fontSize = 16.sp
     )
