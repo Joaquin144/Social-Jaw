@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.settings
+package com.devcommop.myapplication.ui.components.settings.notifications
 
 import androidx.compose.runtime.Composable
 
