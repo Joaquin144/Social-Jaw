@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.devcommop.myapplication.R
 import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.ui.screens.CommonInMainScreen
 import com.devcommop.myapplication.ui.screens.SettingComponentScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,13 +37,13 @@ fun SettingsHomeScreen(
             navController.navigate(SettingComponentScreens.SettingNotificationScreen.route)
         }
         GeneralSettingsItem(icon = R.drawable.baseline_account_circle_24, mainText = "Account", subText = "Manage account details"){
-            navController.navigate(SettingComponentScreens.SettingAccountScreen.route)
+            navController.navigate(CommonInMainScreen.EditUserProfileScreen.route)
         }
         GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "App Preferences", subText = "Manage themes, data usage and more"){
             navController.navigate(SettingComponentScreens.SettingPreferencesScreen.route)
         }
         GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Privacy Policy", subText = ""){
-            // TODO: show privacy policy with snackbar
+            // TODO: show privacy policy with snack-bar
         }
         GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Terms and Conditions", subText = ""){
             navController.navigate(SettingComponentScreens.SettingTermsAndConditionsScreen.route)

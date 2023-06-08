@@ -4,11 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.devcommop.myapplication.ui.components.editprofile.EditUserProfileScreen
 import com.devcommop.myapplication.ui.components.settings.SettingsHomeScreen
-import com.devcommop.myapplication.ui.components.settings.account.AccountUI
 import com.devcommop.myapplication.ui.components.settings.notifications.NotificationsUI
 import com.devcommop.myapplication.ui.components.settings.preferences.OtherSettings
 import com.devcommop.myapplication.ui.components.settings.tandc.TermsConditionsUI
+import com.devcommop.myapplication.ui.screens.CommonInMainScreen
 import com.devcommop.myapplication.ui.screens.SettingComponentScreens
 
 @Composable
@@ -21,8 +22,8 @@ fun SetupSettingNavigation(navController : NavHostController , onSignOut :()-> U
         composable(SettingComponentScreens.SettingNotificationScreen.route){
             NotificationsUI()
         }
-        composable(route = SettingComponentScreens.SettingAccountScreen.route){
-            AccountUI()
+        composable(route = CommonInMainScreen.EditUserProfileScreen.route){
+            EditUserProfileScreen()
         }
         composable(route = SettingComponentScreens.SettingPreferencesScreen.route){
             OtherSettings()

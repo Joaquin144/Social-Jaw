@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.devcommop.myapplication.ui.components.createpost.CreatePostScreen
+import com.devcommop.myapplication.ui.components.editprofile.EditUserProfileScreen
 import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
 import com.devcommop.myapplication.ui.components.mainscreen.MessageScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SearchScreen
@@ -14,9 +15,11 @@ import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.UserProfileScreen
 import com.devcommop.myapplication.ui.components.settings.SettingsScreen
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
+import com.devcommop.myapplication.ui.screens.CommonInMainScreen
+import com.devcommop.myapplication.ui.screens.TopAppBarScreen
 
 @Composable
-fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController, onSignOut:()->  Unit) {
+fun MainScreenNavGraph(modifier : Modifier, navHostController: NavHostController, onNavigateToEditUserProfileScreen:()->Unit, onSignOut:()->  Unit) {
     NavHost(
         navController = navHostController,
         startDestination = BottomBarScreen.HomeScreen.route,
@@ -32,22 +35,29 @@ fun BottomBarNavGraph(modifier : Modifier, navHostController: NavHostController,
             CreatePostScreen()
         }
         composable(BottomBarScreen.UserProfileScreen.route) {
-            UserProfileScreen(onSignOut = onSignOut)
+            UserProfileScreen(
+               onNavigateToEditUserProfileScreen
+                ,onSignOut = onSignOut
+            )
         }
         navigation(
             route = "setting",
             startDestination = "settings_screen"
         ) {
             composable(route = "settings_screen") {
-                SettingsScreen(onSignOut = onSignOut)
-//                SettingsHomeScreen(onSignOut = onSignOut)
+                SettingsScreen(
+                    onNavigateToEditUserProfileScreen ,
+                    onSignOut = onSignOut)
             }
         }
-        composable("message_screen") {
+        composable(TopAppBarScreen.messageScreen.route) {
             MessageScreen()
         }
-        composable("search_screen") {
+        composable(TopAppBarScreen.SearchScreen.route) {
             SearchScreen()
+        }
+        composable(CommonInMainScreen.EditUserProfileScreen.route) {
+            EditUserProfileScreen()
         }
     }
 

@@ -11,7 +11,8 @@ import com.devcommop.myapplication.ui.navigation.SetupSettingNavigation
 
 @Composable
 fun SettingsScreen(
-    onSignOut: () -> Unit = {}
+    onNavigateToEditUserProfileScreen:()->Unit = {},
+    onSignOut:() -> Unit = {}
 ) {
     val navController = rememberNavController()
     Column(

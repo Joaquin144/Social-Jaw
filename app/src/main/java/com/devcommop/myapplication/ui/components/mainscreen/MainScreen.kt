@@ -36,8 +36,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.devcommop.myapplication.R
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
-import com.devcommop.myapplication.ui.navigation.BottomBarNavGraph
+import com.devcommop.myapplication.ui.navigation.MainScreenNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
+import com.devcommop.myapplication.ui.screens.CommonInMainScreen
 
 //fun MainScreen (userData: UserData?, onSignOut: () -> Unit, viewModel : AuthViewModel = hiltViewModel()) {
 
@@ -58,11 +59,13 @@ fun MainScreen( onSignOut: () -> Unit) {
         },
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
-        BottomBarNavGraph(
+        MainScreenNavGraph(
             modifier = Modifier.padding(innerPadding),
             navHostController = navController,
-//            userData,
-            onSignOut
+            onNavigateToEditUserProfileScreen = {
+                navController.navigate(CommonInMainScreen.EditUserProfileScreen.route)
+            },
+            onSignOut = onSignOut
         )
     }
 }

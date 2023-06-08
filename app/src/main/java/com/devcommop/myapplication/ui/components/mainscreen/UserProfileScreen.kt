@@ -51,8 +51,8 @@ import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 
 @Composable
 fun UserProfileScreen(
-//    userData : UserData?,
-    onSignOut: () -> Unit
+    onNavigateToEditUserProfileScreen: () -> Unit = {},
+    onSignOut: () -> Unit = {}
 ) {
 //    val viewModel: AuthViewModel = hiltViewModel()
     val viewModel: AuthViewModel = viewModel(LocalContext.current as ComponentActivity)
@@ -163,7 +163,7 @@ fun UserProfileScreen(
 //                Modifier
 //                    .padding(horizontal = 4.dp),
                 icon = Icons.Default.Edit,
-                onClick = { /* Handle edit profile button click(navigate to edit profile) */ },
+                onClick = { onNavigateToEditUserProfileScreen() },
                 text = "Edit Profile"
             )
 
