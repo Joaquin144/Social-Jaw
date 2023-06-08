@@ -17,6 +17,7 @@ data class User(
     var coverPictureUrl: String? = null,//cover photo for this user
     var company: String? = null,//where this user works
     var employmentStatus: String? = null,// Self-Employed / Job/ Business/ Unemployed / Intern / UnderAge
+    var yearsOfExperience: Int? = null,
     var createdTimestamp: String? = null,// when was this user created
     var dateCreated: Long? = null,
     var dayOfWeekCreated: Long? = null,
@@ -27,6 +28,7 @@ data class User(
     var following: List<String>? = null,//ids of all users which this user follows
     var followersCount: Long? = 0,
     var followingCount: Long? = 0,
+    var hobbies : List<String>? = null,
     var posts: List<String>? = null,//ids of all posts created by this user
     var likedPosts: List<String>? = null,//ids of all posts this user has liked
     var dislikedPosts: List<String>? = null,//ids of all posts this user has disliked

@@ -1,37 +1,26 @@
 package com.devcommop.myapplication.ui.components.editprofile
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLocation
 import androidx.compose.material.icons.filled.Details
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -42,13 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.devcommop.myapplication.R
+import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.ui.components.common.DividerWithSpace
+import com.devcommop.myapplication.ui.components.common.ProfileHeaderSection
 import com.devcommop.myapplication.ui.components.common.text.EditTextSection
 
 @Preview(showBackground = true)
@@ -63,123 +50,51 @@ fun EditUserProfileScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
+        var currentUser = RuntimeQueries.currentUser
         //contains profile pic ,cover and username and bio
-        ProfileHeaderSection()
-        NameSection()
-        BioSection()
-        DividerWithSpace()
-
-        GenderSection()
-        DateOfBirthSection(
-            "01/01/2000",
-            onDateSelected = { date ->
-                // TODO: update user's date of birth
-                Log.d(TAG , "Selected date: $date")
-            }
-        )
-        DividerWithSpace()
-
-        AddressCard()
-        DividerWithSpace()
-
-        EmploymentStatusCard()
-        DividerWithSpace()
-
-    }
-}
-
-@Composable
-fun DividerWithSpace(dividerThickness: Int = 1, spaceGap: Int = 2) {
-    Spacer(modifier = Modifier.height(spaceGap.dp))
-    Divider(modifier = Modifier.height(dividerThickness.dp))
-    Spacer(modifier = Modifier.height(spaceGap.dp))
-}
-
-
-@Composable
-fun ProfileHeaderSection() {
-    // TODO: when user change cover, show dialog to post it as well
-    Box(modifier = Modifier) {
-        Box(
-            contentAlignment = Alignment.BottomEnd,
-        ) {
-            Image(
-                painter = painterResource(R.drawable.dummy_cover_image),
-                contentDescription = "profile_picture",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(16f / 9f)
-                    .padding(horizontal = 2.dp)
-                    .size(160.dp)
-                    .safeContentPadding()
-                    .clip(shape = RectangleShape),
-                contentScale = ContentScale.Crop
+        ProfileHeaderSection(isEditButtonVisible = true)
+        if (currentUser != null) {
+            EditableNameSection(
+                currentUser.userName
             )
-            IconButton(onClick = { /*TODO: Handle profile picture edit */ }) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = "Edit Profile Picture",
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            //val width = LocalConfiguration.current.screenWidthDp - 180 - 10   -4
-            Row(
-                modifier = Modifier,
-                horizontalArrangement = Arrangement.Center
-            ) {
+            EditableBioSection(currentUser.bio)
+            DividerWithSpace()
 
-            }
-
-        }
-
-
-        Row(
-            modifier = Modifier.padding(top = 81.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Box(
-                contentAlignment = Alignment.BottomEnd,
-                modifier = Modifier.padding(0.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.dummy_profile_picture),
-                    contentDescription = "profile_picture",
-                    modifier = Modifier
-                        .padding(horizontal = 2.dp)
-                        .size(180.dp)
-                        .safeContentPadding()
-                        .clip(shape = CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-                IconButton(onClick = { /*TODO: Handle profile picture edit */ }) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit Profile Picture",
-                        modifier = Modifier.size(28.dp)
-                    )
+            EditableGenderSection(currentUser.gender)
+            DateOfBirthSection(
+                currentUser.dob ?: "",
+                onDateSelected = { date ->
+                    // TODO: update user's date of birth
+                    Log.d(TAG, "Selected date: $date")
                 }
-//
+            )
+            DividerWithSpace()
+
+            currentUser.apply {
+                EditableAddressCard(address, city, country)
+                DividerWithSpace()
+
+                EditableEmploymentCard(employmentStatus, company, yearsOfExperience)
+                DividerWithSpace()
             }
-            Spacer(modifier = Modifier.weight(1f))
+
+        } else {
+            Log.d(TAG, "Edit ProfileScreen :Current user is null")
         }
+
+
     }
-//    Text(
-//        text = "Anime Girl",
-//        style = MaterialTheme.typography.headlineMedium
-//    )
 }
+
 
 @Preview(showBackground = true)
 @Composable
-fun NameSection() {
+fun EditableNameSection(userName: String = "") {
     EditTextSection(
         modifier = Modifier,
         leadingIcon = { Icons.Default.Details },
         fieldLabel = "Name",
-        oldFieldValue = "Anime Girl",
+        oldFieldValue = userName,
         onDone = {
             //TODO: update user's name
             // once a name updated , it will be same for least next 15 days
@@ -190,7 +105,7 @@ fun NameSection() {
 
 @Preview(showBackground = true)
 @Composable
-fun AddressCard() {
+fun EditableAddressCard(address: String? = null, city: String? = null, country: String? = null) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -205,7 +120,7 @@ fun AddressCard() {
                 Modifier,
                 @Composable { Icons.Default.AddLocation },
                 "Address",
-                "123 Null Street", //TODO: replace this with User's address
+                address ?: "", //TODO: replace this with User's address
                 onDone = {
                     //update address into db
                 },
@@ -216,7 +131,7 @@ fun AddressCard() {
                 Modifier,
                 @Composable { Icons.Default.LocationCity },
                 "City",
-                "New York",
+                city ?: "",
                 onDone = {
                     //TODO: update city in db
                 })
@@ -226,7 +141,7 @@ fun AddressCard() {
                 Modifier,
                 @Composable { Icons.Default.Flag },
                 "Country",
-                "United States",
+                country ?: "",
                 onDone = {
                     //TODO: update country in db
                 })
@@ -237,13 +152,24 @@ fun AddressCard() {
 
 @Preview(showBackground = true)
 @Composable
-fun EmploymentStatusCard() {
+fun EditableEmploymentCard(
+    employmentStatus: String? = null,
+    company: String? = null,
+    yearsOfExperience: Int? = null
+) {
     val employmentStatusOptions = listOf(
-        "Full-time employment", "Part-time employment", "Self-employment or entrepreneurship" , "Internship","Contract or freelance work", "Zero-hours contract", "Unemployed",
-        "Student", "Other"
+        "Full-time employment",
+        "Part-time employment",
+        "Self-employment or entrepreneurship",
+        "Internship",
+        "Contract or freelance work",
+        "Zero-hours contract",
+        "Unemployed",
+        "Student",
+        "Other"
     )
     // TODO: update with current user data
-    var selectedStatus by remember { mutableStateOf("Student") }
+    var selectedStatus by remember { mutableStateOf(employmentStatus ?: "") }
     var expanded by remember { mutableStateOf(false) }
 
     Card(
@@ -257,7 +183,7 @@ fun EmploymentStatusCard() {
         ) {
             Text("Employment Details", modifier = Modifier.padding(all = 2.dp))
 
-           Box(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
@@ -308,12 +234,12 @@ fun EmploymentStatusCard() {
                     }
                 }
             }
-            if(selectedStatus ==   "Full-time employment" || selectedStatus ==  "Part-time employment" || selectedStatus ==  "Self-employment or entrepreneurship" || selectedStatus ==  "Internship"){
+            if (selectedStatus == "Full-time employment" || selectedStatus == "Part-time employment" || selectedStatus == "Self-employment or entrepreneurship" || selectedStatus == "Internship") {
                 EditTextSection(
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = @Composable { },
                     fieldLabel = "Company Name",
-                    oldFieldValue = "ABC Corp",
+                    oldFieldValue = company ?: "",
                     onDone = {
                         //TODO: update company name
                     }
@@ -322,7 +248,7 @@ fun EmploymentStatusCard() {
                     modifier = Modifier.fillMaxWidth(),
                     leadingIcon = @Composable { },
                     fieldLabel = "Duration of Work",
-                    oldFieldValue = "2 years",
+                    oldFieldValue = (yearsOfExperience ?: 0).toString(),
                     onDone = {
                         //TODO: update duration
                     }
@@ -335,7 +261,7 @@ fun EmploymentStatusCard() {
 
 @Preview(showBackground = true)
 @Composable
-fun GenderSection() {
+fun EditableGenderSection(gender: String? = null ) {
     val genderOptions = listOf(
         "Male",
         "Female",
@@ -350,7 +276,7 @@ fun GenderSection() {
 //        "Third Gender"
     )
     //TODO: selected Gender should be replaced with Current User's Gender present in db
-    var selectedGender by remember { mutableStateOf("Prefer Not To Say") }
+    var selectedGender by remember { mutableStateOf(gender?:"Prefer Not To Say") }
     var expanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -379,7 +305,7 @@ fun GenderSection() {
 
             },
             label = {
-               Text("Gender")
+                Text("Gender")
             },
             maxLines = 1
         )
@@ -407,15 +333,15 @@ fun GenderSection() {
 
 @Preview(showBackground = true)
 @Composable
-fun BioSection() {
+fun EditableBioSection(bio: String? = null ) {
     EditTextSection(
         modifier = Modifier.fillMaxWidth(),
         leadingIcon = @Composable { Icons.Default.Details },
         fieldLabel = "Bio",
-        oldFieldValue = "I am a software engineer at ABC Corp",
+        oldFieldValue = bio ?: "",
         onDone = {
             // TODO: update userBio
         },
-        minLines = 3
+        minLines = 1
     )
 }
