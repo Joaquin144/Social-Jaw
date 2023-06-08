@@ -24,7 +24,8 @@ fun EditTextSection(
     leadingIcon: @Composable () -> Unit = {Icons.Default.Camera},
     fieldLabel: String = "field",
     oldFieldValue : String = "",
-    onDone: () -> Unit = {}
+    onDone: () -> Unit = {},
+    minLines : Int  = 1,
 ) {
     val TAG = "##@@EditTextSection"
     var fieldValue by remember { mutableStateOf(oldFieldValue) }
@@ -38,6 +39,7 @@ fun EditTextSection(
         value = fieldValue,
         onValueChange = { newValue ->
             if(!makeTextReadOnly) {
+                // TODO: validate the entry
                 fieldValue = newValue
             }
         },
@@ -67,7 +69,8 @@ fun EditTextSection(
         },
         label = {
             Text(fieldLabel)
-        }
+        },
+        minLines = minLines
     )
 }
 
