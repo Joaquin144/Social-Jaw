@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.mainscreen.createpost
+package com.devcommop.myapplication.ui.components.createpost
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -30,8 +30,7 @@ class CreatePostViewModel @Inject constructor(
     )
     val postContent: State<ContentTextFieldState> = _postContent
 
-    private val _eventFlow =
-        MutableSharedFlow<UiEvent>()//For some UI events we don't want to show again and again while config changes. eg: Snackbar, Toast, AlertDialog, vibration etc.
+    private val _eventFlow = MutableSharedFlow<UiEvent>()   //For some UI events we don't want to show again and again while config changes. eg: Snackbar, Toast, AlertDialog, vibration etc.
     val event = _eventFlow.asSharedFlow()
 
     init {
@@ -89,17 +88,15 @@ class CreatePostViewModel @Inject constructor(
                     }
 
                     val user = RuntimeQueries.currentUser
-                    if(user == null){
+                    if (user == null) {
                         Log.d(TAG, "Fatal error:-- RuntimeQueries.currentUser is null")
                         return@launch
                     }
-                    val post = Post(
-                        textContent = postContent.value.text.trimEnd() ,
+                    val post = Post(textContent = postContent.value.text.trimEnd(),
                         imagesUrl = postContent.value.imageUri?.let {
-                        listOf(postContent.value.imageUri.toString())
-                    }?: emptyList(),
-                        authorId = user.uid
-                    )
+                            listOf(postContent.value.imageUri.toString())
+                        } ?: emptyList(),
+                        authorId = user.uid)
                     ModelUtils.associatePostToUser(post = post, user = user)
                     //todo: [IMPORTANT!] Ensure that below line is executed fully and then only the control is passed below it. [Doubt] will withContext in repo run parallel to the scope of this VM ??
                     Log.d(TAG, "SubmitPost Event: ${post.toString()} ${user.toString()}")

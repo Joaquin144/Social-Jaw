@@ -220,7 +220,7 @@ class MainActivity : ComponentActivity() {
     private fun addUserToDatabase(userData: UserData) {
         lifecycleScope.launch {
             //todo: take repo from di rather than creating here
-            when (val addStatus = repository.addUser(userData = userData)) {
+            when (val addStatus = repository.editUser(userData = userData)) {
                 is Resource.Success -> {
                     Log.d(TAG, "User created successfully in Database")
                 }

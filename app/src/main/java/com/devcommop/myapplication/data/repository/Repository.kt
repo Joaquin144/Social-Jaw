@@ -45,7 +45,7 @@ class Repository @Inject constructor(
      * @param userData The very minimal data of user just created at Auth
      * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun addUser(userData: UserData): Resource<User> {
+    suspend fun editUser(userData: UserData): Resource<User> {
         /*Aim:--- Ensure these steps are followed
             i) If if user already exists in database then just do "NOTHING". ✅
             ii) Create User object and associate userData to it. ✅
@@ -60,6 +60,20 @@ class Repository @Inject constructor(
                     Log.d(TAG, "User was already created in DB. Not creating it again during SignIn")
                     return@withContext Resource.Success<User> (data = dbUser)
                 }
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
+                Resource.Success<User>(data = user)
+            } catch (exception: Exception) {
+                Resource.Error<User>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
+    }
+
+    suspend fun editUser(user: User): Resource<User> {
+        return withContext(Dispatchers.IO) {
+            try {
                 firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {

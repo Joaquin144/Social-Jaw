@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.devcommop.myapplication.R
-import com.devcommop.myapplication.ui.components.buttons.GoogleSignInButton
+import com.devcommop.myapplication.ui.components.common.buttons.GoogleSignInButton
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 
 @Composable

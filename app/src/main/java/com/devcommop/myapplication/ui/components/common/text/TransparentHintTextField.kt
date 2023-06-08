@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.mainscreen.common
+package com.devcommop.myapplication.ui.components.common.text
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth

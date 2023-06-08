@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.buttons
+package com.devcommop.myapplication.ui.components.common.buttons
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

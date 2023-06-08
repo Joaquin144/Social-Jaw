@@ -1,7 +1,5 @@
 package com.devcommop.myapplication.data.model
 
-import com.devcommop.myapplication.utils.Constants
-
 data class User(
     var uid: String = "",
     var userName: String = "",//todo: Ensure that userName is also unique to all users like uid

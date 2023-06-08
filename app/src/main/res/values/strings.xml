@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">SM App</string>
+    <string name="terms_and_conditions_header">
+        By continuing you accept our Privacy Policy and Term of Use
+
+1.) You will always respect community guidelines.
+2.) You will never troll, harass or shit about others on our App.
+3.) You will never post any Nudity, Gore, Sex or Violence on our platform.
+4.) You will never try to hack, try to gain unauthorized access to our servers.</string>
 </resources>

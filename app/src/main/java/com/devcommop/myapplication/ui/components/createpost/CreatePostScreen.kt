@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.mainscreen.createpost
+package com.devcommop.myapplication.ui.components.createpost
 
 
 import android.Manifest
@@ -52,8 +52,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.devcommop.myapplication.data.local.RuntimeQueries
-import com.devcommop.myapplication.ui.components.buttons.RowScopedHorizontalButtonWithText
-import com.devcommop.myapplication.ui.components.mainscreen.common.TransparentHintTextField
+import com.devcommop.myapplication.ui.components.common.buttons.RowScopedHorizontalButtonWithText
+import com.devcommop.myapplication.ui.components.common.text.TransparentHintTextField
 import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 import java.text.SimpleDateFormat
@@ -150,21 +150,28 @@ fun CreatePostScreen(viewModel: CreatePostViewModel = hiltViewModel()) {
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = MaterialTheme.typography.bodyMedium.copy(color = Color.Black),
                         singleLine = false,
-                        placeholder = { Text(text = "Write a post...") })
+                        placeholder = { Text(text = "Write a post...") }
+                    )
 //
                     contentState.imageUri?.let { uri ->
 
                         Box(
                             contentAlignment = Alignment.TopEnd
-                        ){
+                        ) {
                             IconButton(onClick = {
-                                viewModel.onEvent(CreatePostEvents.EnteredContent(
-                                    value = contentState.text,
-                                    imageUri = null
-                                ))
+                                viewModel.onEvent(
+                                    CreatePostEvents.EnteredContent(
+                                        value = contentState.text,
+                                        imageUri = null
+                                    )
+                                )
                                 Toast.makeText(context, "Image Removed", Toast.LENGTH_LONG).show()
                             }) {
-                                Icon(imageVector = Icons.Default.Cancel, contentDescription = "cancell button", modifier = Modifier.size(32.dp))
+                                Icon(
+                                    imageVector = Icons.Default.Cancel,
+                                    contentDescription = "cancell button",
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
                             AsyncImage(
                                 model = uri,
@@ -172,9 +179,9 @@ fun CreatePostScreen(viewModel: CreatePostViewModel = hiltViewModel()) {
 //                                    .padding(16.dp, 8.dp)
                                     .safeContentPadding()
                                     .fillMaxWidth()
-                                    .height(300.dp)
-                                ,
-                                contentDescription = null)
+                                    .height(300.dp),
+                                contentDescription = null
+                            )
 
                         }
 
@@ -211,7 +218,7 @@ fun CreatePostScreen(viewModel: CreatePostViewModel = hiltViewModel()) {
                             },
                             text = "Camera"
                         )
-                        if(viewModel.isPostValid()) {
+                        if (viewModel.isPostValid()) {
                             RowScopedHorizontalButtonWithText(
                                 icon = Icons.Default.Done,
                                 onClick = {
@@ -249,6 +256,7 @@ fun DefaultPreview() {
     CreatePostScreen()
 }
 
+/*
 @Composable
 fun CreatePostScreenOlder(
     navController: NavController, viewModel: CreatePostViewModel = hiltViewModel()
@@ -271,7 +279,7 @@ fun CreatePostScreenOlder(
                 text = contentState.text,
                 hint = contentState.hint,
                 onValueChange = {
-                    viewModel.onEvent(CreatePostEvents.EnteredContent(it , contentState.imageUri))
+                    viewModel.onEvent(CreatePostEvents.EnteredContent(it, contentState.imageUri))
                 },
                 onFocusChange = {
                     viewModel.onEvent(CreatePostEvents.ChangeContentFocus(it))
@@ -308,6 +316,6 @@ fun CreatePostScreenOlder(
 
     }
 
-}
+}*/
 
 

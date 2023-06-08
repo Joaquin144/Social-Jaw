@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.mainscreen.createpost
+package com.devcommop.myapplication.ui.components.createpost
 
 import android.net.Uri
 import androidx.compose.ui.focus.FocusState
