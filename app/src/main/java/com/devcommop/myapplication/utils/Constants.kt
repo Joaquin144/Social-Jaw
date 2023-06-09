@@ -23,4 +23,8 @@ object Constants {
 
     //SharedPref
     const val BASIC_SHARED_PREF_NAME = "UserBasics"
+
+
+    //App Constants
+    const val DEFAULT_ERROR_MESSAGE = "Some unknown error occurred. Please try again."
 }
