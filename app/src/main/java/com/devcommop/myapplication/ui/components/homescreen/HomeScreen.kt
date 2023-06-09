@@ -25,11 +25,10 @@ fun HomeScreen(
             ) {
                 items(userFeedState.postsList) { post ->
                     PostItem(
-                        username = post.authorUserName,
-                        userProfileIcon = post.authorProfilePictureUrl,
-                        timePosted = post.timestamp.toString(),
-                        contentDescription = post.textContent.toString(),
-                        postImage = post.imagesUrl
+                        post = post,
+                        onLikeButtonClick = { viewModel.onEvent(HomeScreenEvents.LikePost(post)) },
+                        onCommentClick = { viewModel.onEvent(HomeScreenEvents.CommentPost(post)) },
+                        onShareClick = { viewModel.onEvent(HomeScreenEvents.SharePost(post)) },
                     )
                 }
             }

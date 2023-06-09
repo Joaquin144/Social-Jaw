@@ -14,6 +14,7 @@ import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -276,6 +277,7 @@ class Repository @Inject constructor(
                 }.await()
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
+                Log.d(TAG, "Like failed: ${exception.message}")
                 Resource.Error<Post>(
                     message = exception.message
                         ?: "Unknown error occurred. The post couldn't be liked"
@@ -419,7 +421,7 @@ class Repository @Inject constructor(
             try {
                 val postsList: MutableList<Post> = mutableListOf()
                 firestore.collection(Constants.POSTS_COLLECTION).limit(postsCount)
-                    .orderBy("likesCount").get().await().map { documentSnapshot ->
+                    .orderBy("likesCount", Query.Direction.DESCENDING).get().await().map { documentSnapshot ->
                         postsList.add(documentSnapshot.toObject(Post::class.java))
                     }
                 Resource.Success<List<Post>>(data = postsList)

@@ -38,26 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.devcommop.myapplication.data.model.Post
 
 
 @Composable
 fun PostItem(
-//    username: String,
-//    userProfileIcon: Painter = painterResource(R.drawable.dummy_profile_picture),
-//    timePosted: String,
-//    contentDescription: String,
-//    postImage: Painter,
-    username: String = "John Doe",
-    userProfileIcon: String? = "null",
-    timePosted: String = "2 hours ago",
-    contentDescription: String = "Check out this amazing view!",
-    postImage: List<String>? = null
+    post: Post, onLikeButtonClick: () -> Unit, onCommentClick: () -> Unit, onShareClick: () -> Unit
+//    username: String = "John Doe",
+//    userProfileIcon: String? = "null",
+//    timePosted: String = "2 hours ago",
+//    contentDescription: String = "Check out this amazing view!",
+//    postImage: List<String>? = null
 ) {
-
-    var imageUrl : String? = null
-    if(!postImage.isNullOrEmpty()){
-        imageUrl = postImage[0]
-    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +69,7 @@ fun PostItem(
                     .padding(horizontal = 8.dp)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(model = userProfileIcon ) ,
+                    painter = rememberAsyncImagePainter(model = post.authorProfilePictureUrl),
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)
@@ -86,21 +78,20 @@ fun PostItem(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = username,
+                        text = post.authorUserName,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = timePosted,
+                        text = post.timestamp.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.DarkGray
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
-                    onClick = { /* Handle option button click */ },
-                    modifier = Modifier.size(24.dp)
+                    onClick = { /* Handle option button click */ }, modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -111,27 +102,34 @@ fun PostItem(
             }
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
-            Image(
-                painter = rememberAsyncImagePainter(postImage?.get(0).toString()),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
-            )
-
+            post.imagesUrl?.let {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        if (post.imagesUrl!!.isEmpty()) "" else post.imagesUrl!![0].toString(),
+                        contentScale = ContentScale.Inside
+                    ),
+                    //painter = rememberAsyncImagePainter(postImage?.get(0).toString()),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
+                )
+            }
             Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = contentDescription,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 16.sp,
-                color = Color.Black,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            )
+            post.textContent?.let {//only show text if there is any text
+                Text(
+                    text = post.textContent.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
@@ -143,15 +141,16 @@ fun PostItem(
             ) {
                 ActionButton(
                     icon = Icons.Default.FavoriteBorder,
-                    onClick = { /* Handle like button click */ }
+                    onClick = { onLikeButtonClick() },
+                    count = post.likesCount ?: 0
                 )
                 ActionButton(
                     icon = Icons.Default.Comment,
-                    onClick = { /* Handle comment button click */ }
+                    onClick = { onCommentClick() },
+                    count = post.commentsCount ?: 0
                 )
                 ActionButton(
-                    icon = Icons.Default.Share,
-                    onClick = { /* Handle share button click */ }
+                    icon = Icons.Default.Share, onClick = { onShareClick() }, post.sharesCount ?: 0
                 )
             }
         }
@@ -160,20 +159,17 @@ fun PostItem(
 
 @Composable
 fun ActionButton(
-    icon: ImageVector,
-    onClick: () -> Unit,
-    count: Int = 420
+    icon: ImageVector, onClick: () -> Unit, count: Long
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.height(36.dp)
-
-    ) {
+        modifier = Modifier
+            .height(36.dp)
+            .clickable {
+                onClick()
+            }) {
         Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = Color.Black
+            imageVector = icon, contentDescription = null, tint = Color.Black
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
@@ -181,18 +177,17 @@ fun ActionButton(
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Black
         )
-
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PostItemPreview() {
-    PostItem(
-        username = "Anime Girl",
-        userProfileIcon = "null",
-        timePosted = "just now",
-        contentDescription = "Check out this amazing view!",
-        postImage = listOf("null")
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PostItemPreview() {
+//    PostItem(
+//        username = "Anime Girl",
+//        userProfileIcon = "null",
+//        timePosted = "just now",
+//        contentDescription = "Check out this amazing view!",
+//        postImage = listOf("null")
+//    )
+//}

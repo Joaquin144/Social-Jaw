@@ -12,6 +12,7 @@ data class Post(
     var likesCount: Long? = 0,//todo: Ensure for every post created this field is not null otherwise problem in fetching topKPosts
     var dislikesCount: Long? = 0,
     var commentsCount: Long? = 0,
+    var sharesCount: Long? = 0,
     var location: String? = null,
     var deviceId: String? = null,
     var textContent: String? = null,
