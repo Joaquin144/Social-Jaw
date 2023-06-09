@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
+import com.devcommop.myapplication.data.model.ShortItem
 import com.devcommop.myapplication.data.model.User
 import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.utils.CommonUtils
@@ -56,12 +57,18 @@ class Repository @Inject constructor(
             try {
                 val user = User()
                 ModelUtils.associateUserDataToUser(userData = userData, user = user)
-                val dbUser = firestore.collection(Constants.USERS_COLLECTION).document(user.uid).get().await().toObject(User::class.java)
-                if(dbUser != null){
-                    Log.d(TAG, "User was already created in DB. Not creating it again during SignIn")
-                    return@withContext Resource.Success<User> (data = dbUser)
+                val dbUser =
+                    firestore.collection(Constants.USERS_COLLECTION).document(user.uid).get()
+                        .await().toObject(User::class.java)
+                if (dbUser != null) {
+                    Log.d(
+                        TAG,
+                        "User was already created in DB. Not creating it again during SignIn"
+                    )
+                    return@withContext Resource.Success<User>(data = dbUser)
                 }
-                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user)
+                    .await()
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
                 Resource.Error<User>(
@@ -76,10 +83,17 @@ class Repository @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 // upload the images on firebase && update the downloaded url
-                user.profilePictureUrl = downloadUrlFromFirebaseStorage(user.profilePictureUrl , "profilePictures/${user.uid}.jpg")
-                user.coverPictureUrl = downloadUrlFromFirebaseStorage(user.coverPictureUrl , "coverPictures/${user.uid}.jpg")
+                user.profilePictureUrl = downloadUrlFromFirebaseStorage(
+                    user.profilePictureUrl,
+                    "profilePictures/${user.uid}.jpg"
+                )
+                user.coverPictureUrl = downloadUrlFromFirebaseStorage(
+                    user.coverPictureUrl,
+                    "coverPictures/${user.uid}.jpg"
+                )
 
-                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user)
+                    .await()
                 Log.d(TAG, "User DB updated successfully")
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
@@ -92,9 +106,9 @@ class Repository @Inject constructor(
         }
     }
 
-    private suspend fun downloadUrlFromFirebaseStorage(imageUrl: String?, path :String): String? {
+    private suspend fun downloadUrlFromFirebaseStorage(imageUrl: String?, path: String): String? {
         var downloadUrl = null as String?
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 imageUrl?.let {
                     downloadUrl = storageReference.child(path).putFile(it.toUri()).await()
@@ -106,6 +120,76 @@ class Repository @Inject constructor(
         }
         return downloadUrl
     }
+    suspend fun postShorts(short : ShortItem, user :User ) {
+        withContext(Dispatchers.IO) {
+            try {
+//                ModelUtils.assosiateShortItemToUser(short = short, user = user)
+                //TODO: upload video to firebase storage
+                val videoUri = short.mediaUrl?.toUri()
+                var downloadUrl = null as String?
+                Log.d(TAG, "Uploading video to firebase storage with url $videoUri")
+                downloadUrl = videoUri?.let { uri ->
+                    storageReference.child("shorts/${short.id}.mp4")
+                        .putFile(uri).await()
+                        .storage.downloadUrl.await().toString()
+                }
+                Log.d(TAG, "Successfully uploaded video to firebase storage $downloadUrl")
+                //TODO: make a new shortItem
+                short.mediaUrl = downloadUrl
+
+                //TODO: upload the video to firestore db
+                withContext(Dispatchers.IO){
+                    try {
+                        Log.d(TAG, "Uploading video to firestore db ${short.mediaUrl}")
+                        firestore.collection(Constants.SHORTS_COLLECTION).document(short.id).set(short).await()
+                        Log.d(TAG, "Successfully uploaded video to firestore ${short.mediaUrl}")
+                    } catch (exception: Exception) {
+                        Log.d(TAG, "Error uploading video to firestore $exception.message.toString()")
+                    }
+                }
+            } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
+            }
+        }
+    }
+    suspend fun fetchShortsFromDB(): Resource<List<ShortItem>> {
+        return withContext(Dispatchers.IO) {
+            Log.d(TAG, "Fetching shorts from DB")
+            try {
+                val shortItems = firestore.collection(Constants.SHORTS_COLLECTION).get().await()
+                    .toObjects(ShortItem::class.java)
+                Log.d(TAG, "Successfully fetched shorts from DB ${shortItems.toString()}")
+                Resource.Success<List<ShortItem>>(data = shortItems)
+            } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
+                Resource.Error<List<ShortItem>>(
+                    message = exception.message ?: "Something went wrong. Please try again later"
+                )
+            }
+        }
+    }
+//TODO: yet to be implemented
+//    suspend fun createShortsEntryInFirestoreDB(short: ShortItem, user: User) {
+//        withContext(Dispatchers.IO) {
+//            var downloadUrl = null as String?
+//            try {
+//                ModelUtils.assosiateShortItemToUser(short, user)
+//                downloadUrl =
+//                    storageReference.child("shorts/${short.id}.mp4").downloadUrl.await().toString()
+//                withContext(Dispatchers.IO) {
+//                    try {
+//
+//                        firestore.collection(Constants.SHORTS_COLLECTION).document(short.id)
+//                            .set(short)
+//                    } catch (exception: Exception) {
+//                        Log.d(TAG, exception.message.toString())
+//                    }
+//                }
+//            } catch (exception: Exception) {
+//                Log.d(TAG, exception.message.toString())
+//            }
+//        }
+//    }
 
     /**
      * This function takes a [String] object called [postId] and retrieves that [Post] from Firebase Firestore Database
@@ -153,7 +237,7 @@ class Repository @Inject constructor(
         }
     }
 
-    //todo: Ensure auth token is valid before performing such operation so that it user cannot be impersonated [for all CUD ops]
+//todo: Ensure auth token is valid before performing such operation so that it user cannot be impersonated [for all CUD ops]
     /**
      * This function takes the [Post] object called [post] and creates it in the Firestore Database.
      *
@@ -169,13 +253,14 @@ class Repository @Inject constructor(
          */
         return withContext(Dispatchers.IO) {
             try {
-                post.imagesUrl?.let{ list ->
-                    if(list.isNotEmpty() && list[0] == null )
+                // if url is null, then remove the entry from list
+                post.imagesUrl?.let { list ->
+                    if (list.isNotEmpty() && list[0] == null)
                         list.dropLast(1)
                 }
                 ModelUtils.associatePostToUser(post, user)
                 var downloadUrl: String? = null
-                if(post.imagesUrl?.isNullOrEmpty() == false ){
+                if (post.imagesUrl?.isNullOrEmpty() == false) {
                     try {
                         downloadUrl = storageReference.child("images/${post.postId}.jpg")
                             .putFile(post.imagesUrl!![0].toUri()).await()
@@ -184,7 +269,7 @@ class Repository @Inject constructor(
                         Log.d(TAG, "Error in uploading img to firebase cloud: $e")
                     }
                 }
-                if(downloadUrl != null )
+                if (downloadUrl != null)
                     post.imagesUrl = listOf(downloadUrl)
                 Log.d(TAG, "imageUrl @Cloud Firebase : ${downloadUrl.toString()}")
                 Log.d(TAG, "imageUrl in Post : ${post.imagesUrl.toString()}")
@@ -442,7 +527,8 @@ class Repository @Inject constructor(
             try {
                 val postsList: MutableList<Post> = mutableListOf()
                 firestore.collection(Constants.POSTS_COLLECTION).limit(postsCount)
-                    .orderBy("likesCount", Query.Direction.DESCENDING).get().await().map { documentSnapshot ->
+                    .orderBy("likesCount", Query.Direction.DESCENDING).get().await()
+                    .map { documentSnapshot ->
                         postsList.add(documentSnapshot.toObject(Post::class.java))
                     }
                 Resource.Success<List<Post>>(data = postsList)
@@ -478,7 +564,7 @@ class Repository @Inject constructor(
                 if (user == null)
                     throw CustomException(message = "User cannot be found")
                 val usersList = user.followers
-                Resource.Success<List<String>>(data = usersList?: emptyList())//(data = usersList)
+                Resource.Success<List<String>>(data = usersList ?: emptyList())//(data = usersList)
             } catch (exception: Exception) {
                 Resource.Error<List<String>>(
                     message = exception.message

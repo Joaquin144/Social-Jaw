@@ -5,6 +5,7 @@ object Constants {
     const val USERS_COLLECTION = "USERS"
     const val POSTS_COLLECTION = "POSTS"//each document will be a post in itself
     const val COMMENTS_COLLECTION = "COMMENTS"
+    const val SHORTS_COLLECTION = "SHORTS"
 
     //other firebase constants
     const val GLOBAL_FOLLOWER = "admin_hoon_mai"

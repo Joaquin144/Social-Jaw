@@ -3,7 +3,6 @@ package com.devcommop.myapplication.utils
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.User
 import com.devcommop.myapplication.ui.components.authscreen.UserData
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class ModelUtils {
@@ -28,6 +27,17 @@ class ModelUtils {
                 commentsCount = 0
             }
         }
+
+//        fun assosiateShortItemToUser(short: ShortItem, user: User) {
+//            if(short.id == ""){
+//                short.id = CommonUtils.getAutoId()
+//            }
+//            short.apply {
+////                id = CommonUtils.getAutoId()
+//                createdBy = user.uid
+////                timestamp = System.currentTimeMillis().toString()
+//             }
+//        }
 
         fun associateUserDataToUser(userData: UserData, user: User) {
             //todo: replace non-null assertions by throwing custom exceptions
