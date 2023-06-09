@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.editprofile
+package com.devcommop.myapplication.ui.components.editprofile.components
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditCalendar
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,23 +59,25 @@ fun DateOfBirthSection(currentValue: String, onDateSelected: (String) -> Unit) {
                                 SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                                     .format(Date(year - 1900, month, dayOfMonth))
                             selectedDate.value = selectedDateFormatted
+                            //TODO: user should not be able to select a date in future
+                            if (selectedDate.value.isNotEmpty() ) {
+                                onDateSelected(selectedDate.value)
+                            }
                         }
                     },
                 contentDescription = null
             )
             Spacer(Modifier.padding(horizontal = 4.dp))
-            Icon(
-                imageVector = Icons.Default.Save,
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable {
-                        if (selectedDate.value.isNotEmpty()) {
-                            onDateSelected(selectedDate.value)
-                        }
-                    },
-                contentDescription = null
-            )
-            Spacer(Modifier.padding(horizontal = 4.dp))
+//            Icon(
+//                imageVector = Icons.Default.Save,
+//                modifier = Modifier
+//                    .size(32.dp)
+//                    .clickable {
+//
+//                    },
+//                contentDescription = null
+//            )
+//            Spacer(Modifier.padding(horizontal = 4.dp))
 
         }
     }

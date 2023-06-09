@@ -1,27 +1,6 @@
 package com.devcommop.myapplication.ui.components.settings.account
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.devcommop.myapplication.ui.components.common.buttons.RowScopedHorizontalButtonWithText
-
+/*
 @Composable
 fun AccountUI(
 
@@ -38,7 +17,7 @@ fun AccountUI(
                 value = viewModel.userName,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredUserName(
+                        EditUserProfileUIEvent.EnteredUserName(
                             newValue
                         )
                     )
@@ -48,7 +27,7 @@ fun AccountUI(
                 value = viewModel.fullName,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredFullName(
+                        EditUserProfileUIEvent.EnteredFullName(
                             newValue
                         )
                     )
@@ -58,7 +37,7 @@ fun AccountUI(
                 value = viewModel.gender,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredGender(
+                        EditUserProfileUIEvent.EnteredGender(
                             newValue
                         )
                     )
@@ -68,7 +47,7 @@ fun AccountUI(
                 value = viewModel.relationshipStatus,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredRelationshipStatus(
+                        EditUserProfileUIEvent.EnteredRelationshipStatus(
                             newValue
                         )
                     )
@@ -78,7 +57,7 @@ fun AccountUI(
                 value = viewModel.address,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredAddress(
+                        EditUserProfileUIEvent.EnteredAddress(
                             newValue
                         )
                     )
@@ -86,13 +65,13 @@ fun AccountUI(
             )
             InputField(
                 value = viewModel.city,
-                onValueChange = { newValue -> viewModel.onEvent(AccountUIEvent.EnteredCity(newValue)) }
+                onValueChange = { newValue -> viewModel.onEvent(EditUserProfileUIEvent.EnteredCity(newValue)) }
             )
             InputField(
                 value = viewModel.country,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredCountry(
+                        EditUserProfileUIEvent.EnteredCountry(
                             newValue
                         )
                     )
@@ -102,7 +81,7 @@ fun AccountUI(
                 value = viewModel.interestedIn,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredInterestedIn(
+                        EditUserProfileUIEvent.EnteredInterestedIn(
                             newValue
                         )
                     )
@@ -110,21 +89,21 @@ fun AccountUI(
             )
             InputField(
                 value = viewModel.dob,
-                onValueChange = { newValue -> viewModel.onEvent(AccountUIEvent.EnteredDob(newValue)) }
+                onValueChange = { newValue -> viewModel.onEvent(EditUserProfileUIEvent.EnteredDob(newValue)) }
             )
             InputField(
                 value = viewModel.phone,
-                onValueChange = { newValue -> viewModel.onEvent(AccountUIEvent.EnteredPhone(newValue)) }
+                onValueChange = { newValue -> viewModel.onEvent(EditUserProfileUIEvent.EnteredPhone(newValue)) }
             )
             InputField(
                 value = viewModel.bio,
-                onValueChange = { newValue -> viewModel.onEvent(AccountUIEvent.EnteredBio(newValue)) }
+                onValueChange = { newValue -> viewModel.onEvent(EditUserProfileUIEvent.EnteredBio(newValue)) }
             )
             InputField(
                 value = viewModel.company,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredCompany(
+                        EditUserProfileUIEvent.EnteredCompany(
                             newValue
                         )
                     )
@@ -134,7 +113,7 @@ fun AccountUI(
                 value = viewModel.employmentStatus,
                 onValueChange = { newValue ->
                     viewModel.onEvent(
-                        AccountUIEvent.EnteredEmploymentStatus(
+                        EditUserProfileUIEvent.EnteredEmploymentStatus(
                             newValue
                         )
                     )
@@ -157,7 +136,7 @@ fun AccountUI(
                 RowScopedHorizontalButtonWithText(
                     icon = Icons.Default.Done,
                     onClick = {
-                        viewModel.onEvent(AccountUIEvent.SubmitDetails)
+                        viewModel.onEvent(EditUserProfileUIEvent.SubmitDetails)
                     },
                     text = "Save"
                 )
@@ -183,3 +162,4 @@ fun InputField(value: String, onValueChange: (String) -> Unit) {
             .fillMaxWidth()
     )
 }
+*/

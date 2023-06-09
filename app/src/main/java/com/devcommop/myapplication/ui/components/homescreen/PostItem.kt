@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.devcommop.myapplication.ui.components.common.DividerWithSpace
 
 
 @Composable
@@ -54,8 +55,8 @@ fun PostItem(
     postImage: List<String>? = null
 ) {
 
-    var imageUrl : String? = null
-    if(!postImage.isNullOrEmpty()){
+    var imageUrl: String? = null
+    if (!postImage.isNullOrEmpty()) {
         imageUrl = postImage[0]
     }
     Card(
@@ -77,7 +78,7 @@ fun PostItem(
                     .padding(horizontal = 8.dp)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(model = userProfileIcon ) ,
+                    painter = rememberAsyncImagePainter(model = userProfileIcon),
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)
@@ -111,18 +112,19 @@ fun PostItem(
             }
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
-            Image(
-                painter = rememberAsyncImagePainter(postImage?.get(0).toString()),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            if (!postImage.isNullOrEmpty() && postImage[0] != "null") {
+                Image(
+                    painter = rememberAsyncImagePainter(postImage[0].toString()),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
             Text(
                 text = contentDescription,
                 style = MaterialTheme.typography.bodyMedium,
@@ -132,9 +134,7 @@ fun PostItem(
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Divider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(4.dp))
+            DividerWithSpace()
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

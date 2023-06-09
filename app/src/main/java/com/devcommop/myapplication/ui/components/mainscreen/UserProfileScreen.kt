@@ -79,7 +79,12 @@ fun UserProfileScreen(
 
     ) {
 
-        ProfileHeaderSection(isEditButtonVisible = false)
+        ProfileHeaderSection(
+            isEditButtonVisible = false,
+            profilePictureUrl = currentUser?.profilePictureUrl,
+            coverPictureUrl = currentUser?.coverPictureUrl,
+            userName = currentUser?.userName
+            )
 
         // Second Row - Follower,Following and Posts Count
         Row(

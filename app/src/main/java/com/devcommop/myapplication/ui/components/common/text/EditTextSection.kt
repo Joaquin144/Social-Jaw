@@ -3,6 +3,8 @@ package com.devcommop.myapplication.ui.components.common.text
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Done
@@ -16,7 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun EditTextSection(
@@ -24,8 +28,11 @@ fun EditTextSection(
     leadingIcon: @Composable () -> Unit = {Icons.Default.Camera},
     fieldLabel: String = "field",
     oldFieldValue : String = "",
-    onDone: () -> Unit = {},
+    onDone: (newFieldValue : String ) -> Unit = {},
     minLines : Int  = 1,
+    keyboardOptions : KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text
+    )
 ) {
     val TAG = "##@@EditTextSection"
     var fieldValue by remember { mutableStateOf(oldFieldValue) }
@@ -39,13 +46,15 @@ fun EditTextSection(
         value = fieldValue,
         onValueChange = { newValue ->
             if(!makeTextReadOnly) {
-                // TODO: validate the entry
                 fieldValue = newValue
             }
         },
+//        enabled = !makeTextReadOnly,
         readOnly = makeTextReadOnly,
-        modifier = modifier.fillMaxWidth(),
-        leadingIcon = { Icons.Default.Camera },
+        modifier = modifier
+            .padding(horizontal = 4.dp)
+            .fillMaxWidth(),
+//        leadingIcon = { Icons.Default.Camera },
         trailingIcon = {
                 Icon(
                     imageVector =  ( if(pencilIconState) (Icons.Default.Edit) else (Icons.Default.Done)),
@@ -56,11 +65,16 @@ fun EditTextSection(
                             pencilIconState = false
                         } else {
                             // give read only access and show edit button instead
-                            // TODO: Save changes to database
-                            onDone()
-                            Log.d(TAG, "EditTextSection: $fieldLabel => $fieldValue")
-                            makeTextReadOnly = true
-                            pencilIconState = true
+                            // TODO: Validate if the field is not left empty
+                            if(fieldValue.trimEnd().isNotEmpty()) {
+                                Log.d(TAG, "EditTextSection: $fieldLabel => $fieldValue")
+                                makeTextReadOnly = true
+                                pencilIconState = true
+                                onDone(fieldValue.trimEnd())
+                            }
+                            else{
+                                Log.d(TAG, "EditTextSection: $fieldLabel value is empty")
+                            }
 
                         }},
                     contentDescription = null
@@ -70,7 +84,8 @@ fun EditTextSection(
         label = {
             Text(fieldLabel)
         },
-        minLines = minLines
+        minLines = minLines,
+        keyboardOptions = keyboardOptions
     )
 }
 

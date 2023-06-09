@@ -74,15 +74,36 @@ class Repository @Inject constructor(
     suspend fun editUser(user: User): Resource<User> {
         return withContext(Dispatchers.IO) {
             try {
+                // upload the images on firebase && update the downloaded url
+                user.profilePictureUrl = downloadUrlFromFirebaseStorage(user.profilePictureUrl , "profilePictures/${user.uid}.jpg")
+                user.coverPictureUrl = downloadUrlFromFirebaseStorage(user.coverPictureUrl , "coverPictures/${user.uid}.jpg")
+
                 firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user).await()
+                Log.d(TAG, "User DB updated successfully")
                 Resource.Success<User>(data = user)
             } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
                 Resource.Error<User>(
                     message = exception.message
                         ?: "Unknown error occurred. The post couldn't be fetched"
                 )
             }
         }
+    }
+
+    private suspend fun downloadUrlFromFirebaseStorage(imageUrl: String?, path :String): String? {
+        var downloadUrl = null as String?
+        withContext(Dispatchers.IO){
+            try {
+                imageUrl?.let {
+                    downloadUrl = storageReference.child(path).putFile(it.toUri()).await()
+                        .storage.downloadUrl.await().toString()
+                }
+            } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
+            }
+        }
+        return downloadUrl
     }
 
     /**

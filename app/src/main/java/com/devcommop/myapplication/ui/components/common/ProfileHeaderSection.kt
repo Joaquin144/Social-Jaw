@@ -18,6 +18,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,19 +30,29 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.devcommop.myapplication.data.local.RuntimeQueries
-
 
 @Composable
-fun ProfileHeaderSection(isEditButtonVisible: Boolean = false) {
-    // TODO: when user change cover, show dialog to post it as well
-    val currentUser = RuntimeQueries.currentUser
+fun ProfileHeaderSection(
+    isEditButtonVisible: Boolean = false,
+    profilePictureUrl: String? = null ,
+    coverPictureUrl: String? = null ,
+    userName : String? = null,
+    onEditCoverPictureClicked: @Composable () -> Unit = {},
+    onEditProfilePictureClicked: @Composable () -> Unit = {}
+) {
+    var coverPictureEditButtonPressed by remember {
+        mutableStateOf(false)
+    }
+    var profilePictureEditButtonPressed by remember {
+        mutableStateOf(false)
+    }
+
     Box(modifier = Modifier) {
         Box(
             contentAlignment = Alignment.BottomEnd,
         ) {
             Image(
-                painter = rememberAsyncImagePainter(currentUser?.coverPictureUrl),
+                painter = rememberAsyncImagePainter(coverPictureUrl),
                 contentDescription = "cover picture",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -49,13 +63,21 @@ fun ProfileHeaderSection(isEditButtonVisible: Boolean = false) {
                     .clip(shape = RectangleShape),
                 contentScale = ContentScale.Crop
             )
+
             if (isEditButtonVisible) {
-                IconButton(onClick = { /*TODO: Handle profile picture edit */ }) {
+                IconButton(onClick =  {
+                    coverPictureEditButtonPressed = true
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit Profile Picture",
+                        contentDescription = "Edit Cover Picture",
                         modifier = Modifier.size(28.dp)
                     )
+                }
+                if(coverPictureEditButtonPressed)
+                {
+                    onEditCoverPictureClicked()
+                    coverPictureEditButtonPressed = false
                 }
             }
 
@@ -73,7 +95,7 @@ fun ProfileHeaderSection(isEditButtonVisible: Boolean = false) {
                 modifier = Modifier.padding(0.dp)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(currentUser?.profilePictureUrl),
+                    painter = rememberAsyncImagePainter(profilePictureUrl),
                     contentDescription = "profile_picture",
                     modifier = Modifier
                         .padding(horizontal = 2.dp)
@@ -82,13 +104,20 @@ fun ProfileHeaderSection(isEditButtonVisible: Boolean = false) {
                         .clip(shape = CircleShape),
                     contentScale = ContentScale.Crop
                 )
+
                 if (isEditButtonVisible) {
-                    IconButton(onClick = { /*TODO: Handle profile picture edit */ }) {
+                    IconButton(onClick = {
+                        profilePictureEditButtonPressed = true
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = "Edit Profile Picture",
                             modifier = Modifier.size(28.dp)
                         )
+                    }
+                    if(profilePictureEditButtonPressed){
+                        onEditProfilePictureClicked()
+                        profilePictureEditButtonPressed = false
                     }
                 }
 //
@@ -98,7 +127,7 @@ fun ProfileHeaderSection(isEditButtonVisible: Boolean = false) {
     }
     if (!isEditButtonVisible) {
         Text(
-            text = "${currentUser?.userName}", // TODO: Replace with userData.username
+            text = userName.toString(), // TODO: Replace with userData.username
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(horizontal = 2.dp, vertical = 4.dp)
         )
