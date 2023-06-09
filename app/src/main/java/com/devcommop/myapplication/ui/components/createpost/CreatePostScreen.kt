@@ -169,7 +169,7 @@ fun CreatePostScreen(viewModel: CreatePostViewModel = hiltViewModel()) {
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Cancel,
-                                    contentDescription = "cancell button",
+                                    contentDescription = "cancel button",
                                     modifier = Modifier.size(32.dp)
                                 )
                             }

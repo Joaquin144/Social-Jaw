@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.mainscreen
+package com.devcommop.myapplication.ui.components.homescreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -55,7 +55,7 @@ fun PostItem(
 ) {
 
     var imageUrl : String? = null
-    if(postImage.isNullOrEmpty() == false && postImage[0] != null){
+    if(!postImage.isNullOrEmpty()){
         imageUrl = postImage[0]
     }
     Card(
@@ -77,7 +77,7 @@ fun PostItem(
                     .padding(horizontal = 8.dp)
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(model =userProfileIcon ) ,
+                    painter = rememberAsyncImagePainter(model = userProfileIcon ) ,
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)
@@ -112,14 +112,14 @@ fun PostItem(
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
             Image(
-                painter = rememberAsyncImagePainter(postImage),
+                painter = rememberAsyncImagePainter(postImage?.get(0).toString()),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(4.dp))
-                    .clickable(onClick = { /* Handle image click */ })
+                    .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
             )
 
             Spacer(modifier = Modifier.height(2.dp))

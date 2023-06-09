@@ -25,11 +25,11 @@ private const val TAG = "##@@Repository"
 /**
  * Important points to take care of:--
  *
- * 1.) For each create/update/delete operation [authToken] must be valid all the times
+ * 1.) For each create/update/delete operation "authToken" must be valid all the times
  *
  * 2.) Ensure atomicity of operations where more than 1 transactions are involved
  *
- * 3.) Handle [exceptions] properly for ViewModels.
+ * 3.) Handle "exceptions" properly for ViewModels.
  *
  * 4.) Log errors into firebase or smth
  */
@@ -147,12 +147,11 @@ class Repository @Inject constructor(
          */
         return withContext(Dispatchers.IO) {
             try {
-                if (post.postId == "")
-                    post.postId = CommonUtils.getAutoId()
                 post.imagesUrl?.let{ list ->
                     if(list.isNotEmpty() && list[0] == null )
                         list.dropLast(1)
                 }
+                ModelUtils.associatePostToUser(post, user)
                 var downloadUrl: String? = null
                 if(post.imagesUrl?.isNullOrEmpty() == false ){
                     try {
@@ -225,7 +224,7 @@ class Repository @Inject constructor(
      * Overwrites the [Post] referred to by this [newPost]. If the document does not
      * yet exist, it will be created. If a document already exists, it will be overwritten.
      *
-     * @param newpost The newPost which will replace the old post
+     * @param newPost The newPost which will replace the old post
      * @return A Resource<Post> that will either be a Success or Error
      */
     suspend fun editPost(newPost: Post): Resource<Post> {

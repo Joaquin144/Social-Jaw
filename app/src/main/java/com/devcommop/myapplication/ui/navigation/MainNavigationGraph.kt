@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.devcommop.myapplication.ui.components.createpost.CreatePostScreen
 import com.devcommop.myapplication.ui.components.editprofile.EditUserProfileScreen
-import com.devcommop.myapplication.ui.components.mainscreen.HomeScreen
+import com.devcommop.myapplication.ui.components.homescreen.HomeScreen
 import com.devcommop.myapplication.ui.components.mainscreen.MessageScreen
 import com.devcommop.myapplication.ui.components.mainscreen.SearchScreen
 import com.devcommop.myapplication.ui.components.mainscreen.ShortsScreen
@@ -26,7 +26,7 @@ fun MainScreenNavGraph(modifier : Modifier, navHostController: NavHostController
         modifier = modifier
     ) {
         composable(BottomBarScreen.HomeScreen.route) {
-            HomeScreen()
+            HomeScreen(navController = navHostController)
         }
         composable(BottomBarScreen.ShortsScreen.route) {
             ShortsScreen()

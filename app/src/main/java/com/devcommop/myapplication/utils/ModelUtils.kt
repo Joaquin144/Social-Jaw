@@ -14,6 +14,8 @@ class ModelUtils {
          * @param user which is initiating the action
          */
         fun associatePostToUser(post: Post, user: User) {
+            if (post.postId == "")
+                post.postId = CommonUtils.getAutoId()
             post.apply {
                 postId = CommonUtils.getAutoId()
                 authorId = user.uid
@@ -24,7 +26,6 @@ class ModelUtils {
                 likesCount = 0
                 dislikesCount = 0
                 commentsCount = 0
-                textContent = post.textContent
             }
         }
 

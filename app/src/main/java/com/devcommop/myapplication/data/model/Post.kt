@@ -1,5 +1,7 @@
 package com.devcommop.myapplication.data.model
 
+import com.devcommop.myapplication.utils.CommonUtils
+
 data class Post(
     var postId: String = "",
     var authorId: String = "",
