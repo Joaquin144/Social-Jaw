@@ -2,14 +2,11 @@ package com.devcommop.myapplication.ui.components.shorts
 
 import android.view.LayoutInflater
 import android.view.View
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -17,6 +14,7 @@ import com.devcommop.myapplication.R
 
 @Composable
 fun VideoPlayer(
+    modifier : Modifier = Modifier,
     exoPlayer: ExoPlayer,
     onControllerVisibilityChanged: (uiVisible: Boolean) -> Unit
 ) {
@@ -34,8 +32,9 @@ fun VideoPlayer(
 
     AndroidView(
         { playerView },
-        Modifier
-            .height(256.dp)
-            .background(Color.Black)
+        modifier = modifier
+            .aspectRatio(9f / 16f)
+//            .fillMaxSize()
+//            .background(Color.Black)
     )
 }

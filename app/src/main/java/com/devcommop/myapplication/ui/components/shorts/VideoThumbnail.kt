@@ -2,23 +2,24 @@ package com.devcommop.myapplication.ui.components.shorts
 
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.R
 
 @Composable
-fun VideoThumbnail(url: String) {
+fun VideoThumbnail(modifier : Modifier , url: String?) {
     Image(
-        painter = painterResource(id = R.drawable.default_thumbnail),
+        painter = if( url != null ) rememberAsyncImagePainter(url)  else  painterResource(id = R.drawable.default_thumbnail),
         contentDescription = null,
-        modifier = Modifier
-            .fillMaxWidth()
-            .size(512.dp),
+        modifier = modifier
+            .safeContentPadding()
+            .aspectRatio(16f / 16f )
+            ,
         contentScale = ContentScale.Crop
     )
 }
