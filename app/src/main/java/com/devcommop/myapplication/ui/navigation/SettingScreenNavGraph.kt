@@ -20,7 +20,7 @@ fun SetupSettingNavigation(navController : NavHostController , onSignOut :()-> U
             SettingsHomeScreen( navController , onSignOut = onSignOut)
         }
         composable(SettingComponentScreens.SettingNotificationScreen.route){
-            NotificationsUI()
+            NotificationsUI(navController = navController)
         }
         composable(route = CommonInMainScreen.EditUserProfileScreen.route){
             EditUserProfileScreen()

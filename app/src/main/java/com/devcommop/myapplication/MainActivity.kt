@@ -266,7 +266,7 @@ class MainActivity : ComponentActivity() {
 
     private fun setupNotificationsFunctionality() {
         MyFirebaseMessagingService.sharedPreferences =
-            getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+            getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)    //create the SharedPref object
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.d(TAG, "Fetching FCM registration token failed", task.exception)
@@ -277,8 +277,8 @@ class MainActivity : ComponentActivity() {
             MyFirebaseMessagingService.token = token
         })
 
-        //Aim: Subscribe to the required topics
-        FirebaseMessaging.getInstance().subscribeToTopic(Constants.DEFAULT_FCM_TOPIC)
+        ////Discarded Aim: Subscribe to the required topics
+        ///FirebaseMessaging.getInstance().subscribeToTopic(Constants.DEFAULT_FCM_TOPIC)
     }
 
     private fun loadRuntimeQueries() {

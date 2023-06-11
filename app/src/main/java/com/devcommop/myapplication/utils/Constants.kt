@@ -6,11 +6,10 @@ object Constants {
     const val POSTS_COLLECTION = "POSTS"//each document will be a post in itself
     const val COMMENTS_COLLECTION = "COMMENTS"
     const val SHORTS_COLLECTION = "SHORTS"
+    const val USERS_NOTIFICATION_SUB_COLLECTION = "MY_NOTIFICATIONS"
+    const val USERS_NOTIFICATION_SETTINGS_DOC = "notification_settings"
 
-    //other firebase constants
-    const val GLOBAL_FOLLOWER = "admin_hoon_mai"
-
-
+    //Google one tap sign in
     const val WEB_CLIENT_ID = "110349412397-06umj758q3e4uj8acn5r2hl05omkgrct.apps.googleusercontent.com"
 
 
@@ -21,9 +20,13 @@ object Constants {
     const val DEFAULT_NOTIFICATION_CHANNEL_ID = "social_jaw_default_001"
     const val DEFAULT_NOTIFICATION_CHANNEL_NAME = "social_jaw_default_channel"
     const val DEFAULT_FCM_TOPIC = "fcm_topic_all"
+    const val URGENT_FCM_TOPIC = "fcm_topic_urgent"
+    const val PROMOTIONAL_FCM_TOPIC = "fcm_topic_promo"
+    const val APP_UPDATE_FCM_TOPIC = "fcm_topic_app_update"
+    const val SECURITY_FCM_TOPIC = "fcm_topic_security"
 
     //SharedPref
-    const val BASIC_SHARED_PREF_NAME = "UserBasics"
+    const val BASIC_SHARED_PREF_NAME = "UserBasics"     //will contain basic info about the user
 
 
     //App Constants

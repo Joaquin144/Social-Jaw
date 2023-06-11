@@ -2,15 +2,19 @@ package com.devcommop.myapplication.data.repository
 
 import android.util.Log
 import androidx.core.net.toUri
+import com.devcommop.myapplication.SMApplication
 import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.ShortItem
 import com.devcommop.myapplication.data.model.User
+import com.devcommop.myapplication.services.MyFirebaseMessagingService
 import com.devcommop.myapplication.ui.components.authscreen.UserData
+import com.devcommop.myapplication.ui.components.settings.notifications.NotificationState
 import com.devcommop.myapplication.utils.CommonUtils
 import com.devcommop.myapplication.utils.Constants
 import com.devcommop.myapplication.utils.CustomException
 import com.devcommop.myapplication.utils.ModelUtils
+import com.devcommop.myapplication.utils.NotificationUtils
 import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -47,8 +51,7 @@ class Repository @Inject constructor(
      * @param userData The very minimal data of user just created at Auth
      * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun editUser(userData: UserData): Resource<User> {
-        /*Aim:--- Ensure these steps are followed
+    suspend fun editUser(userData: UserData): Resource<User> {/*Aim:--- Ensure these steps are followed
             i) If if user already exists in database then just do "NOTHING". ✅
             ii) Create User object and associate userData to it. ✅
             iii) Create this user object in firestore database. ✅
@@ -62,8 +65,7 @@ class Repository @Inject constructor(
                         .await().toObject(User::class.java)
                 if (dbUser != null) {
                     Log.d(
-                        TAG,
-                        "User was already created in DB. Not creating it again during SignIn"
+                        TAG, "User was already created in DB. Not creating it again during SignIn"
                     )
                     return@withContext Resource.Success<User>(data = dbUser)
                 }
@@ -84,12 +86,10 @@ class Repository @Inject constructor(
             try {
                 // upload the images on firebase && update the downloaded url
                 user.profilePictureUrl = downloadUrlFromFirebaseStorage(
-                    user.profilePictureUrl,
-                    "profilePictures/${user.uid}.jpg"
+                    user.profilePictureUrl, "profilePictures/${user.uid}.jpg"
                 )
                 user.coverPictureUrl = downloadUrlFromFirebaseStorage(
-                    user.coverPictureUrl,
-                    "coverPictures/${user.uid}.jpg"
+                    user.coverPictureUrl, "coverPictures/${user.uid}.jpg"
                 )
 
                 firestore.collection(Constants.USERS_COLLECTION).document(user.uid).set(user)
@@ -111,8 +111,8 @@ class Repository @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 imageUrl?.let {
-                    downloadUrl = storageReference.child(path).putFile(it.toUri()).await()
-                        .storage.downloadUrl.await().toString()
+                    downloadUrl = storageReference.child(path).putFile(it.toUri())
+                        .await().storage.downloadUrl.await().toString()
                 }
             } catch (exception: Exception) {
                 Log.d(TAG, exception.message.toString())
@@ -120,7 +120,8 @@ class Repository @Inject constructor(
         }
         return downloadUrl
     }
-    suspend fun postShorts(short : ShortItem, user :User ) {
+
+    suspend fun postShorts(short: ShortItem, user: User) {
         withContext(Dispatchers.IO) {
             try {
 //                ModelUtils.assosiateShortItemToUser(short = short, user = user)
@@ -129,22 +130,24 @@ class Repository @Inject constructor(
                 var downloadUrl = null as String?
                 Log.d(TAG, "Uploading video to firebase storage with url $videoUri")
                 downloadUrl = videoUri?.let { uri ->
-                    storageReference.child("shorts/${short.id}.mp4")
-                        .putFile(uri).await()
-                        .storage.downloadUrl.await().toString()
+                    storageReference.child("shorts/${short.id}.mp4").putFile(uri)
+                        .await().storage.downloadUrl.await().toString()
                 }
                 Log.d(TAG, "Successfully uploaded video to firebase storage $downloadUrl")
                 //TODO: make a new shortItem
                 short.mediaUrl = downloadUrl
 
                 //TODO: upload the video to firestore db
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     try {
                         Log.d(TAG, "Uploading video to firestore db ${short.mediaUrl}")
-                        firestore.collection(Constants.SHORTS_COLLECTION).document(short.id).set(short).await()
+                        firestore.collection(Constants.SHORTS_COLLECTION).document(short.id)
+                            .set(short).await()
                         Log.d(TAG, "Successfully uploaded video to firestore ${short.mediaUrl}")
                     } catch (exception: Exception) {
-                        Log.d(TAG, "Error uploading video to firestore $exception.message.toString()")
+                        Log.d(
+                            TAG, "Error uploading video to firestore $exception.message.toString()"
+                        )
                     }
                 }
             } catch (exception: Exception) {
@@ -152,6 +155,7 @@ class Repository @Inject constructor(
             }
         }
     }
+
     suspend fun fetchShortsFromDB(): Resource<List<ShortItem>> {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "Fetching shorts from DB")
@@ -201,10 +205,9 @@ class Repository @Inject constructor(
             try {
                 val post =
                     firestore.collection(Constants.POSTS_COLLECTION).document(postId).get().await()
-                        .toObject(Post::class.java)
-                        ?: throw CustomException(
-                            message = "Post was deleted by the author or removed by us for community guidelines violations"
-                        )
+                        .toObject(Post::class.java) ?: throw CustomException(
+                        message = "Post was deleted by the author or removed by us for community guidelines violations"
+                    )
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
                 Resource.Error<Post>(
@@ -246,8 +249,7 @@ class Repository @Inject constructor(
      * @param user The [User] which is initiating the create action
      * @return A Resource<Post> that will either be a Success or Error
      */
-    suspend fun addPost(post: Post, user: User): Resource<Post> {
-        /*Aim: Ensure atomicity of this op which contains 2 transactions:----
+    suspend fun addPost(post: Post, user: User): Resource<Post> {/*Aim: Ensure atomicity of this op which contains 2 transactions:----
              i. Creating [Post] in POSTS collection and ✅
              ii. Adding postId to [User] ✅
          */
@@ -255,22 +257,20 @@ class Repository @Inject constructor(
             try {
                 // if url is null, then remove the entry from list
                 post.imagesUrl?.let { list ->
-                    if (list.isNotEmpty() && list[0] == null)
-                        list.dropLast(1)
+                    if (list.isNotEmpty() && list[0] == null) list.dropLast(1)
                 }
                 ModelUtils.associatePostToUser(post, user)
                 var downloadUrl: String? = null
                 if (post.imagesUrl?.isNullOrEmpty() == false) {
                     try {
                         downloadUrl = storageReference.child("images/${post.postId}.jpg")
-                            .putFile(post.imagesUrl!![0].toUri()).await()
-                            .storage.downloadUrl.await().toString()
+                            .putFile(post.imagesUrl!![0].toUri())
+                            .await().storage.downloadUrl.await().toString()
                     } catch (e: Exception) {
                         Log.d(TAG, "Error in uploading img to firebase cloud: $e")
                     }
                 }
-                if (downloadUrl != null)
-                    post.imagesUrl = listOf(downloadUrl)
+                if (downloadUrl != null) post.imagesUrl = listOf(downloadUrl)
                 Log.d(TAG, "imageUrl @Cloud Firebase : ${downloadUrl.toString()}")
                 Log.d(TAG, "imageUrl in Post : ${post.imagesUrl.toString()}")
                 val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
@@ -296,8 +296,7 @@ class Repository @Inject constructor(
      * @param user The [User] which is initiating the delete action
      * @return A Resource<Post> that will either be a Success or Error
      */
-    suspend fun deletePost(post: Post, user: User): Resource<Post> {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun deletePost(post: Post, user: User): Resource<Post> {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Deleting [Post] in POSTS collection ✅
              ii. Deleting [Post] from {user's} [post] field ✅
              iii. Deleting [Post] from {user's} {likedPosts} and {dislikedPosts} fields ✅
@@ -357,8 +356,7 @@ class Repository @Inject constructor(
      * @param user The user which has initiated the like action
      * @return A Resource<Post> that will either be a Success or Error
      */
-    suspend fun likePost(post: Post, user: User): Resource<Post> {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun likePost(post: Post, user: User): Resource<Post> {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Add this post's id to user's likedPosts field ✅
              ii. Remove this post's id from user's disliked field ✅
              iii. Add this user's id to this post's likedByUsers field ✅
@@ -378,8 +376,11 @@ class Repository @Inject constructor(
                     batch.update(postRef, "dislikedByUsers", FieldValue.arrayRemove(user.uid))
                     //todo: Check if below ops are consistent operation across multiple devices
                     batch.update(postRef, "likesCount", FieldValue.increment(1))
-                    if (post.dislikesCount != null && post.dislikesCount!! > 0)
-                        batch.update(postRef, "dislikesCount", FieldValue.increment(-1))
+                    if (post.dislikesCount != null && post.dislikesCount!! > 0) batch.update(
+                        postRef,
+                        "dislikesCount",
+                        FieldValue.increment(-1)
+                    )
                 }.await()
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
@@ -400,8 +401,7 @@ class Repository @Inject constructor(
      * @param user The user which has initiated the dislike action
      * @return A Resource<Post> that will either be a Success or Error
      */
-    suspend fun dislikePost(post: Post, user: User): Resource<Post> {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun dislikePost(post: Post, user: User): Resource<Post> {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Add this post's id to user's dislikedPosts field ✅
              ii. Remove this post's id from user's likedPosts field ✅
              iii. Add this user's id to this post's dislikedByUsers field ✅
@@ -421,8 +421,11 @@ class Repository @Inject constructor(
                     batch.update(postRef, "likedByUsers", FieldValue.arrayRemove(user.uid))
                     //todo: Check if below ops are consistent operation across multiple devices
                     batch.update(postRef, "dislikesCount", FieldValue.increment(1))
-                    if (post.likesCount != null && post.likesCount!! > 0)
-                        batch.update(postRef, "likesCount", FieldValue.increment(-1))
+                    if (post.likesCount != null && post.likesCount!! > 0) batch.update(
+                        postRef,
+                        "likesCount",
+                        FieldValue.increment(-1)
+                    )
                 }.await()
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
@@ -453,8 +456,7 @@ class Repository @Inject constructor(
             try {
                 val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
                 val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
-                if (comment.commentId == "")
-                    comment.commentId = CommonUtils.getAutoId()
+                if (comment.commentId == "") comment.commentId = CommonUtils.getAutoId()
                 val commentsRef =
                     firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
                 firestore.runBatch { batch ->
@@ -481,8 +483,7 @@ class Repository @Inject constructor(
      * @param comment The object [Comment] which has to be deleted
      * @return A [Resource] of type [Comment] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun removeCommentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun removeCommentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Delete this comment's id to user's comments' field ✅
              ii. Delete this comment's id to post's comments' field ✅
              iii. Delete this comment to Comments collection ✅
@@ -492,8 +493,7 @@ class Repository @Inject constructor(
             try {
                 val postRef = firestore.collection(Constants.POSTS_COLLECTION).document(post.postId)
                 val userRef = firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
-                if (comment.commentId == "")
-                    comment.commentId = CommonUtils.getAutoId()
+                if (comment.commentId == "") comment.commentId = CommonUtils.getAutoId()
                 val commentsRef =
                     firestore.collection(Constants.COMMENTS_COLLECTION).document(comment.commentId)
                 firestore.runBatch { batch ->
@@ -501,9 +501,7 @@ class Repository @Inject constructor(
                     batch.update(userRef, "comments", FieldValue.arrayRemove(comment.commentId))
                     batch.update(postRef, "comments", FieldValue.arrayRemove(comment.commentId))
                     batch.update(
-                        postRef,
-                        "commentsCount",
-                        FieldValue.increment(-1)
+                        postRef, "commentsCount", FieldValue.increment(-1)
                     )//todo: ensure this is atleast 0 all times
                     batch.delete(commentsRef)
                 }.await()
@@ -561,8 +559,7 @@ class Repository @Inject constructor(
             try {
                 val user = firestore.collection(Constants.USERS_COLLECTION).document(user.uid).get()
                     .await().toObject(User::class.java)
-                if (user == null)
-                    throw CustomException(message = "User cannot be found")
+                if (user == null) throw CustomException(message = "User cannot be found")
                 val usersList = user.followers
                 Resource.Success<List<String>>(data = usersList ?: emptyList())//(data = usersList)
             } catch (exception: Exception) {
@@ -580,8 +577,7 @@ class Repository @Inject constructor(
      * @param userInitiatingAction of type [User] whose has initiated the action
      * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun followUser(userToFollow: User, userInitiatingAction: User): Resource<User> {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun followUser(userToFollow: User, userInitiatingAction: User): Resource<User> {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Add this user2's id to user1's followers field ✅
              ii. Add this user1's id to user2's following field ✅
              iii. Increasing followingCount field of user2 ✅
@@ -597,9 +593,7 @@ class Repository @Inject constructor(
                     //todo: merge these ops to reduce billing
                     batch.update(user1Ref, "followers", FieldValue.arrayUnion(userToFollow.uid))
                     batch.update(
-                        user2Ref,
-                        "following",
-                        FieldValue.arrayUnion(userInitiatingAction.uid)
+                        user2Ref, "following", FieldValue.arrayUnion(userInitiatingAction.uid)
                     )
                     batch.update(user2Ref, "followingCount", FieldValue.increment(1))
                     batch.update(user1Ref, "followersCount", FieldValue.increment(1))
@@ -620,8 +614,7 @@ class Repository @Inject constructor(
      * @param userInitiatingAction of type [User] whose has initiated the action
      * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun unfollowUser(userToUnfollow: User, userInitiatingAction: User) {
-        /*Aim: Ensure atomicity of this op which contains these transactions:----
+    suspend fun unfollowUser(userToUnfollow: User, userInitiatingAction: User) {/*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Remove this user2's id to user1's followers field ✅
              ii. Remove this user1's id to user2's following field ✅
              iii. Decreasing followingCount field of user2
@@ -636,9 +629,7 @@ class Repository @Inject constructor(
                 firestore.runBatch { batch ->
                     //todo: merge these ops to reduce billing
                     batch.update(
-                        user1Ref,
-                        "followers",
-                        FieldValue.arrayRemove(userInitiatingAction.uid)
+                        user1Ref, "followers", FieldValue.arrayRemove(userInitiatingAction.uid)
                     )
                     batch.update(user2Ref, "following", FieldValue.arrayRemove(userToUnfollow.uid))
                     //todo: Make sure below fields don't get less than zero
@@ -680,6 +671,42 @@ class Repository @Inject constructor(
                 Resource.Error<User>(
                     message = exception.message
                         ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
+    }
+
+    /**
+     * This function updates user preferences on database as well as locally
+     * @param notificationState of type [NotificationState] The preferred notification settings of the [User]
+     * @param user of type [User] who is initiating the action
+     * @return A [Resource] of type [User] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun updateUserNotificationsSettings(
+        notificationState: NotificationState, user: User
+    ): Resource<User> {
+        /*  Aim: To do these things either all together or none
+            1.) Save notification preferences locally ✅
+            2.) Subscribe/Unsubscribe the topics/tokens ✅
+            3.) Save those settings on Database ✅
+
+         */
+        //todo: Ensure that both either ops are successful or both get failed and no other state should be allowed
+        return withContext(Dispatchers.IO) {
+            try {
+                val options = NotificationUtils.buildOptions(notificationState, user.uid)
+                //todo: For comments, likes, follow it is better to have token rather than topics as token is faster, secure and for few devices. topics are only good for public announcements
+                MyFirebaseMessagingService.changeFcmTopicsSubscriptionsAndWriteLocally(options)
+
+                firestore.collection(Constants.USERS_COLLECTION).document(user.uid)
+                    .collection(Constants.USERS_NOTIFICATION_SUB_COLLECTION)
+                    .document(Constants.USERS_NOTIFICATION_SETTINGS_DOC).set(notificationState)
+                    .await()
+                Resource.Success<User>(data = user)
+            } catch (exception: Exception) {
+                Log.d(TAG, "updateUserNotificationsSettings failed to update: $exception")
+                Resource.Error<User>(
+                    message = exception.message ?: "Some unknown error occurred. Please try again"
                 )
             }
         }
