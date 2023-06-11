@@ -2,9 +2,10 @@ package com.devcommop.myapplication.data.repository
 
 import android.util.Log
 import androidx.core.net.toUri
-import com.devcommop.myapplication.SMApplication
 import com.devcommop.myapplication.data.model.Comment
+import com.devcommop.myapplication.data.model.NotificationData
 import com.devcommop.myapplication.data.model.Post
+import com.devcommop.myapplication.data.model.PushNotification
 import com.devcommop.myapplication.data.model.ShortItem
 import com.devcommop.myapplication.data.model.User
 import com.devcommop.myapplication.services.MyFirebaseMessagingService
@@ -14,14 +15,19 @@ import com.devcommop.myapplication.utils.CommonUtils
 import com.devcommop.myapplication.utils.Constants
 import com.devcommop.myapplication.utils.CustomException
 import com.devcommop.myapplication.utils.ModelUtils
+import com.devcommop.myapplication.utils.NotificationApiInstance
 import com.devcommop.myapplication.utils.NotificationUtils
 import com.devcommop.myapplication.utils.Resource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -363,6 +369,7 @@ class Repository @Inject constructor(
              iv. Remove this user' id from this post's dislikedByUsers field ✅
              v. Increasing likesCount of this post ✅
              vi. Decrease this post's dislikesCount ✅ ❓ [maybe wrong code]
+             vii. Send Notification to that user //todo: Replace it with some cloud function or admin sdk.
          */
         return withContext(Dispatchers.IO) {
             try {
@@ -382,6 +389,15 @@ class Repository @Inject constructor(
                         FieldValue.increment(-1)
                     )
                 }.await()
+                sendNotification(
+                    PushNotification(
+                        data = NotificationData(
+                            title = "You received a like from ${post.authorFullName ?: "some user"}",
+                            message = ""
+                        ),
+                        to = "${post.authorId}_like"//todo: fill it
+                    )
+                )
                 Resource.Success<Post>(data = post)
             } catch (exception: Exception) {
                 Log.d(TAG, "Like failed: ${exception.message}")
@@ -712,4 +728,33 @@ class Repository @Inject constructor(
         }
     }
 
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try{
+            val response = NotificationApiInstance.api.postNotification(
+                notification = notification
+            )
+            if(response.isSuccessful){
+                Log.d(TAG, "sendNotification--> Success with response: $response")
+                //Log.d(TAG, "sendNotification--> Success with response: ${Gson().toJson(response)}")
+            }else{
+                Log.d(TAG, "sendNotification--> Failed with response: $response")
+            }
+        }catch(exception: Exception){
+            Log.d(TAG, "sendNotification--> failed with exception= $exception")
+        }
+    }
+
+    /*
+    private fun sendNotification(
+        topic: String,
+        notificationTitle: String,
+        notificationBody: String = "",
+        notificationImageUrl: String
+    ) {
+        val condition = "'$topic' in topics"
+        val to = "${Constants.FCM_SENDER_ID}@fcm.googleapis.com"
+        val message = RemoteMessage.Builder(to)
+            .addData("topic", topic)
+            .
+    }*/
 }

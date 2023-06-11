@@ -95,12 +95,13 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+        Log.d(TAG, "onMessageReceived: ${message.describeContents()}")
 
         val intent = Intent(this, MainActivity::class.java)
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationId =
-            Random.nextInt()   //we want all notifs to have different ids because any new notif with preexisting id would replace the older notifs which have id equal to this notif
+            Random.nextInt()   //we want all notifications to have different ids because any new notif with preexisting id would replace the older notifs which have id equal to this notification
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
@@ -115,7 +116,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 .setContentTitle(message.data["title"])
                 .setContentText(message.data["message"])
                 .setSmallIcon(R.drawable.notification_icon_image)
-                .setAutoCancel(true)//one click causes notif to be closed
+                .setAutoCancel(true)//one click causes notification to be closed
                 .setContentIntent(pendingIntent)
                 .build()
 
