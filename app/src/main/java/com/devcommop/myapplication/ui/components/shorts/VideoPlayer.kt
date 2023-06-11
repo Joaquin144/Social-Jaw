@@ -2,7 +2,6 @@ package com.devcommop.myapplication.ui.components.shorts
 
 import android.view.LayoutInflater
 import android.view.View
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,7 +32,7 @@ fun VideoPlayer(
     AndroidView(
         { playerView },
         modifier = modifier
-            .aspectRatio(9f / 16f)
+//            .aspectRatio(9f / 16f)
 //            .fillMaxSize()
 //            .background(Color.Black)
     )

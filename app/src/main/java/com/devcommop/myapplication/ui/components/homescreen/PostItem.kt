@@ -34,9 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.data.model.Post
 
@@ -100,25 +100,27 @@ fun PostItem(
                     )
                 }
             }
-            Divider(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(4.dp))
-            post.imagesUrl?.let {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        if (post.imagesUrl!!.isEmpty()) "" else post.imagesUrl!![0].toString(),
-                        contentScale = ContentScale.Inside
-                    ),
-                    //painter = rememberAsyncImagePainter(postImage?.get(0).toString()),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(4.dp))
-                        .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
-                )
-            }
             Spacer(modifier = Modifier.height(2.dp))
+            Divider(modifier = Modifier.fillMaxWidth())
+            post.imagesUrl.apply {
+                if (!this.isNullOrEmpty() && this[0] != "null") {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            post.imagesUrl!![0].toUri(),
+                            contentScale = ContentScale.Inside
+                        ),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(4.dp))
+                            .clickable(onClick = { /* Handle image click */ })//todo: Zoom into image/open into fullScreen
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                }
+            }
             post.textContent?.let {//only show text if there is any text
                 Text(
                     text = post.textContent.toString(),
@@ -129,8 +131,9 @@ fun PostItem(
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+
             }
-            Spacer(modifier = Modifier.height(4.dp))
             Divider(modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(4.dp))
             Row(
