@@ -6,6 +6,7 @@ sealed class SettingComponentScreens(val route : String ){
     object SettingNotificationScreen : SettingComponentScreens("setting_notification_screen")
     object SettingPreferencesScreen : SettingComponentScreens("setting_preferences_screen")
     object SettingTermsAndConditionsScreen : SettingComponentScreens("setting_terms_and_conditions_screen")
+    object SettingPrivacyPolicyScreen : SettingComponentScreens("setting_privacy_policy_screen")
 
 
 }

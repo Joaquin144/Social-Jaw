@@ -8,6 +8,7 @@ import com.devcommop.myapplication.ui.components.editprofile.EditUserProfileScre
 import com.devcommop.myapplication.ui.components.settings.SettingsHomeScreen
 import com.devcommop.myapplication.ui.components.settings.notifications.NotificationsUI
 import com.devcommop.myapplication.ui.components.settings.preferences.OtherSettings
+import com.devcommop.myapplication.ui.components.settings.privacy_policy.PrivacyPolicyUI
 import com.devcommop.myapplication.ui.components.settings.tandc.TermsConditionsUI
 import com.devcommop.myapplication.ui.screens.CommonInMainScreen
 import com.devcommop.myapplication.ui.screens.SettingComponentScreens
@@ -31,6 +32,8 @@ fun SetupSettingNavigation(navController : NavHostController , onSignOut :()-> U
         composable(route = SettingComponentScreens.SettingTermsAndConditionsScreen.route){
             TermsConditionsUI()
         }
-
+        composable(route = SettingComponentScreens.SettingPrivacyPolicyScreen.route){
+            PrivacyPolicyUI()
+        }
     }
 }
