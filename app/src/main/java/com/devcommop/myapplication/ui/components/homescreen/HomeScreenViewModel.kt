@@ -1,7 +1,6 @@
 package com.devcommop.myapplication.ui.components.homescreen
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -43,9 +42,10 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
         if (user == null) {
             user = RuntimeQueries.currentUser
             viewModelScope.launch {
-                delay(1000L)//wait for 1 second so that use gets initialized
+                delay(1000L) //wait for 1 second so that use gets initialized
             }
             onEvent(event)//recursion
+            return //because we don't want to execute when block multiple times
         }
         when (event) {
             is HomeScreenEvents.Refresh -> {
@@ -74,7 +74,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
 
     fun fetchPosts() {
         viewModelScope.launch {
-            when (val queryStatus = repository.fetchTopKPosts(DEFAULT_POSTS_COUNT)) {
+            when (val queryStatus = repository.fetchLatestKPosts(DEFAULT_POSTS_COUNT)) {
                 is Resource.Success -> {
                     userFeed.value.postsList = queryStatus.data ?: emptyList()
                     Log.d(TAG, "the list size in fetchPosts(): ${userFeed.value.postsList.size}")

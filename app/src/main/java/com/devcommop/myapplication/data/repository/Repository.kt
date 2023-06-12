@@ -22,9 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.storage.FirebaseStorage
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -162,6 +160,29 @@ class Repository @Inject constructor(
         }
     }
 
+    suspend fun getUserDetailsById(id: String): Resource<User> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val user =
+                    firestore.collection(Constants.USERS_COLLECTION).document(id).get().await()
+                        .toObject(User::class.java)
+                Log.d(TAG, "Successfully fetched user details $user")
+                if (user == null) {
+                    throw Exception("User not found")
+                }
+                Resource.Success<User>(data = user)
+            } catch (
+                exception: Exception
+            ) {
+                Log.d(TAG, exception.message.toString())
+                Resource.Error<User>(
+                    message = exception.message ?: "Unable to get user details"
+                )
+            }
+        }
+
+    }
+
     suspend fun fetchShortsFromDB(): Resource<List<ShortItem>> {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "Fetching shorts from DB")
@@ -178,28 +199,6 @@ class Repository @Inject constructor(
             }
         }
     }
-//TODO: yet to be implemented
-//    suspend fun createShortsEntryInFirestoreDB(short: ShortItem, user: User) {
-//        withContext(Dispatchers.IO) {
-//            var downloadUrl = null as String?
-//            try {
-//                ModelUtils.assosiateShortItemToUser(short, user)
-//                downloadUrl =
-//                    storageReference.child("shorts/${short.id}.mp4").downloadUrl.await().toString()
-//                withContext(Dispatchers.IO) {
-//                    try {
-//
-//                        firestore.collection(Constants.SHORTS_COLLECTION).document(short.id)
-//                            .set(short)
-//                    } catch (exception: Exception) {
-//                        Log.d(TAG, exception.message.toString())
-//                    }
-//                }
-//            } catch (exception: Exception) {
-//                Log.d(TAG, exception.message.toString())
-//            }
-//        }
-//    }
 
     /**
      * This function takes a [String] object called [postId] and retrieves that [Post] from Firebase Firestore Database
@@ -556,8 +555,24 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun fetchLatestKPosts(postsCount: Long): List<Post>? {
-        return null
+    suspend fun fetchLatestKPosts(postsCount: Long): Resource<List<Post>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val postsList: MutableList<Post> = mutableListOf()
+                firestore.collection(Constants.POSTS_COLLECTION).limit(postsCount)
+                    .orderBy("timestamp", Query.Direction.DESCENDING).get().await()
+                    .map { documentSnapshot ->
+                        postsList.add(documentSnapshot.toObject(Post::class.java))
+                    }
+                Resource.Success<List<Post>>(data = postsList)
+            } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
+                Resource.Error<List<Post>>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
     }
 
     /**
@@ -728,21 +743,22 @@ class Repository @Inject constructor(
         }
     }
 
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
-        try{
-            val response = NotificationApiInstance.api.postNotification(
-                notification = notification
-            )
-            if(response.isSuccessful){
-                Log.d(TAG, "sendNotification--> Success with response: $response")
-                //Log.d(TAG, "sendNotification--> Success with response: ${Gson().toJson(response)}")
-            }else{
-                Log.d(TAG, "sendNotification--> Failed with response: $response")
+    private fun sendNotification(notification: PushNotification) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = NotificationApiInstance.api.postNotification(
+                    notification = notification
+                )
+                if (response.isSuccessful) {
+                    Log.d(TAG, "sendNotification--> Success with response: $response")
+                    //Log.d(TAG, "sendNotification--> Success with response: ${Gson().toJson(response)}")
+                } else {
+                    Log.d(TAG, "sendNotification--> Failed with response: $response")
+                }
+            } catch (exception: Exception) {
+                Log.d(TAG, "sendNotification--> failed with exception= $exception")
             }
-        }catch(exception: Exception){
-            Log.d(TAG, "sendNotification--> failed with exception= $exception")
         }
-    }
 
     /*
     private fun sendNotification(
