@@ -33,7 +33,7 @@ fun TermsConditionsUI() {
     ) {
 
         Text(
-            text = stringResource(id = R.string.terms_and_conditions_header),
+            text = stringResource(id = R.string.terms_and_conditions_header_two),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(),

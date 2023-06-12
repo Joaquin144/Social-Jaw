@@ -32,4 +32,8 @@ object Constants {
 
     //App Constants
     const val DEFAULT_ERROR_MESSAGE = "Some unknown error occurred. Please try again."
+
+    //Help and Feedback
+    val HELP_AND_FEEDBACK_EMAILS = arrayOf("contact@socailjaw.com")
+    const val GITHUB_REPOSITORY_URL = "https://github.com/pareekdevansh/Social-Jaw"
 }

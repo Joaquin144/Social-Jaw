@@ -2,7 +2,9 @@ package com.devcommop.myapplication.ui.components.settings
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import com.devcommop.myapplication.data.local.RuntimeQueries
 import com.devcommop.myapplication.ui.components.settings.privacy_policy.PrivacyPolicyActivity
 import com.devcommop.myapplication.ui.screens.CommonInMainScreen
 import com.devcommop.myapplication.ui.screens.SettingComponentScreens
+import com.devcommop.myapplication.utils.Constants
 
 private const val TAG = "##@@SettngHomeScreen"
 
@@ -58,8 +61,11 @@ fun SettingsHomeScreen(
         GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Terms and Conditions", subText = ""){
             navController.navigate(SettingComponentScreens.SettingTermsAndConditionsScreen.route)
         }
-        GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Help Center", subText = ""){
-            //TODO: navigate to email support with intent
+        GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Help and Feedback", subText = ""){
+            context.openEmail()
+        }
+        GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Source Code and contributing", subText = "Contribute to this project on Github"){
+            context.openGithubRepository()
         }
         GeneralSettingsItem(icon = R.drawable.baseline_work_24, mainText = "Sign Out", subText = "", onClick = onSignOut)
 //        AccountUI()
@@ -78,5 +84,31 @@ private fun Context.navigateToPrivacyPolicyActivity() {
         startActivity(intent)
     } catch (exception: Exception){
         Log.d(TAG, "not able to start PrivacyPolicyActivity--> $exception")
+    }
+}
+
+private fun Context.openEmail() {
+    try {
+        val emailIntent = Intent(Intent.ACTION_SEND)
+        emailIntent.data = Uri.parse("mailto:")
+        emailIntent.type = "text/plain"
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(Constants.HELP_AND_FEEDBACK_EMAILS))
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Help and Feedback")
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Regarding the app,")
+        emailIntent.type = "message/rfc822"
+        startActivity(Intent.createChooser(emailIntent, "Choose Email Client..."))
+    } catch (exception: Exception){
+        Log.d(TAG, "not able to start PrivacyPolicyActivity--> $exception")
+        Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+    }
+}
+
+private fun Context.openGithubRepository() {
+    try {
+        val githubIntent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.GITHUB_REPOSITORY_URL))
+        startActivity(githubIntent)
+    } catch (exception: Exception){
+        Log.d(TAG, "not able to start PrivacyPolicyActivity--> $exception")
+        Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
     }
 }
