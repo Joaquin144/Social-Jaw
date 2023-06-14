@@ -42,7 +42,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.7'
+        kotlinCompilerExtensionVersion '1.4.6'//downgraded for incompatibility with kotlin 1.8.20
     }
     packagingOptions {
         resources {
@@ -56,6 +56,12 @@ android {
             }
         }
     }
+
+//    dependencyManagement {
+//        resolutionStrategy {
+//            cacheChangingModulesFor 0, 'seconds'
+//        }
+//    }
 }
 
 dependencies {
