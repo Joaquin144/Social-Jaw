@@ -76,7 +76,7 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
         viewModelScope.launch {
             when (val queryStatus = repository.fetchLatestKPosts(DEFAULT_POSTS_COUNT)) {
                 is Resource.Success -> {
-                    //userFeed.value.postsList = queryStatus.data ?: emptyList()
+                    //userFeed.value.postsList = queryStatus.data ?: emptyList() => Bad(compose cannot observe change in state)
                     val postsList = queryStatus.data ?: emptyList()
                     _userFeed.value = userFeed.value.copy(postsList = postsList)
                     Log.d(TAG, "the list size in fetchPosts(): ${userFeed.value.postsList.size}")

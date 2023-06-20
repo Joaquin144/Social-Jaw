@@ -49,15 +49,15 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import kotlinx.coroutines.flow.collectLatest
 
+private const val TAG = "##@@ShortsScreen"
+
 @Composable
 fun ShortsScreen(viewModel: ShortsViewModel = hiltViewModel()) {
-
-    val TAG = "##@@ShortsScreen"
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val exoPlayer = remember(context) { ExoPlayer.Builder(context).build() }
     val listState = rememberLazyListState()
-    var isProgressBarVisible by remember {
+    val isProgressBarVisible by remember {
         mutableStateOf(false)
     }
     val videos by viewModel.videos.collectAsState()

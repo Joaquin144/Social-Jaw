@@ -453,13 +453,40 @@ class Repository @Inject constructor(
     }
 
     /**
+     * This function returns comments on a particular post
+     * @param postId The object of type [String] for which comments have to be fetched
+     * @return A [Resource] of type [List] of [Comment] that will either be a [Resource.Success] or [Resource.Error]
+     */
+    suspend fun getCommentsOnPost(postId: String): Resource<List<Comment>> {
+        /*Aim:
+            i. Fetch comments
+            ii. Apply pagination to reduce billing
+        */
+        return withContext(Dispatchers.IO) {
+            try {
+                val commentsList = mutableListOf<Comment>()
+                firestore.collection(Constants.COMMENTS_COLLECTION)
+                    .whereEqualTo("postId", postId).get().await().map { documentSnapshot ->
+                    commentsList.add(documentSnapshot.toObject(Comment::class.java))
+                }
+                Resource.Success<List<Comment>>(data = commentsList)
+            } catch (exception: Exception) {
+                Resource.Error<List<Comment>>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be liked"
+                )
+            }
+        }
+    }
+
+    /**
      * This function takes 3 objects of type [Post], [User], [Comment] and creates a [comment] on that [post] by the [user]
      * @param post The object [Post] on which comment has to be created
      * @param user The object [User] the user which is initiating the action
      * @param comment The object [Comment] which has to be created
      * @return A [Resource] of type [Comment] that will either be a [Resource.Success] or [Resource.Error]
      */
-    suspend fun commentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {
+    suspend fun addCommentOnPost(post: Post, user: User, comment: Comment): Resource<Comment> {
         //todo: Block offensive comments [ML or smth]
         /*Aim: Ensure atomicity of this op which contains these transactions:----
              i. Add this comment's id to user's comments' field ✅

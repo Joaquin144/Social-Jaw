@@ -6,5 +6,5 @@ data class Comment(
     var text: String = "",
     var timestamp: String = "",
     var postId: String = "",
-    var authorId: String = "",
+    var authorId: String = ""
 )

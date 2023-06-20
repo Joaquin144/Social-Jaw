@@ -192,15 +192,3 @@ fun ActionButton(
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun PostItemPreview() {
-//    PostItem(
-//        username = "Anime Girl",
-//        userProfileIcon = "null",
-//        timePosted = "just now",
-//        contentDescription = "Check out this amazing view!",
-//        postImage = listOf("null")
-//    )
-//}
