@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -76,8 +77,13 @@ class MainActivity : ComponentActivity() {
         setupNotificationsFunctionality()
         //loadRuntimeQueries()//todo: do only if the user is logged in
 
+        val sharedPreferences =
+            getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+        val selectedThemeIndex = sharedPreferences.getInt("selectedThemeIndex", 0)
         setContent {
-            MyApplicationTheme {
+            MyApplicationTheme(
+                darkTheme = if (selectedThemeIndex == 0) isSystemInDarkTheme() else selectedThemeIndex == 2
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -154,8 +160,11 @@ class MainActivity : ComponentActivity() {
                                                 inclusive = true
                                             }
                                         }
-                                        val sharedPreferences = getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
-                                        with(sharedPreferences.edit()){
+                                        val sharedPreferences = getSharedPreferences(
+                                            Constants.BASIC_SHARED_PREF_NAME,
+                                            Context.MODE_PRIVATE
+                                        )
+                                        with(sharedPreferences.edit()) {
                                             putBoolean("OnBoardingCompletedInPast", true)
                                             apply()
                                         }
