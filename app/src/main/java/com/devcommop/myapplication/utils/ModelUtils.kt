@@ -1,5 +1,6 @@
 package com.devcommop.myapplication.utils
 
+import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.model.User
 import com.devcommop.myapplication.ui.components.authscreen.UserData
@@ -54,6 +55,18 @@ class ModelUtils {
                 isDeactivated = false
                 followersCount = 0
                 followingCount = 0
+            }
+        }
+
+        fun associateUserAndPostToComment(comment: Comment, user: User, post: Post) {
+            comment.apply {
+                commentId = CommonUtils.getAutoId()
+                authorUserName = user.userName
+                authorFullName = user.fullName?:""
+                authorProfilePictureUrl = user.profilePictureUrl?:""//todo: provide default user pic
+                timestamp = CommonUtils.getTimestamp()
+                postId = post.postId
+                authorId  = user.uid
             }
         }
     }

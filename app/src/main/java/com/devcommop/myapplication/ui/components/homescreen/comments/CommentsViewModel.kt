@@ -7,8 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.data.model.Comment
 import com.devcommop.myapplication.data.model.Post
 import com.devcommop.myapplication.data.repository.Repository
+import com.devcommop.myapplication.utils.ModelUtils
 import com.devcommop.myapplication.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +26,7 @@ private const val TAG = "##@@CommentsVM"
 class CommentsViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     companion object {
         var currentPost = Post()
-            set(value){
+            set(value) {
                 field = value
                 currentPostState.value = value
             }
@@ -35,6 +38,8 @@ class CommentsViewModel @Inject constructor(private val repository: Repository) 
 
     private val _commentText = mutableStateOf("")
     val commentText: State<String> = _commentText
+
+    private var user = RuntimeQueries.currentUser
 
     init {
         Log.d(TAG, "I am initialised")
@@ -63,10 +68,29 @@ class CommentsViewModel @Inject constructor(private val repository: Repository) 
     }
 
     fun onEvent(event: CommentsEvent) {
+        user = RuntimeQueries.currentUser
         when (event) {
             is CommentsEvent.AddComment -> {
-                Log.d(TAG, "add comment feature is yet to be implemented")
-                //when (val addCommentStatus = repository.addCommentOnPost())
+                user?.let { user ->
+                    Log.d(TAG, "add comment feature is yet to be implemented")
+                    viewModelScope.launch {
+                        val comment = Comment(text = event.text)
+                        Log.d(TAG, "SubmitPost Event: trying to submit post")
+                        if (comment.text.isBlank() || comment.text.isEmpty()) {
+                            Log.d(TAG, "SubmitPost Event: Oops post validation failed")
+                            return@launch
+                        } else {
+                            ModelUtils.associateUserAndPostToComment(comment, user, currentPost)
+                            val addStatus = repository.addCommentOnPost(currentPost, user, comment)
+                            Log.d(TAG, "addCommentStatus of repo call is: ${addStatus.toString()}")
+                            when(addStatus){
+                                is Resource.Error -> {}
+                                is Resource.Loading -> {}
+                                is Resource.Success -> { }
+                            }
+                        }
+                    }
+                }
             }
 
             is CommentsEvent.Reload -> {

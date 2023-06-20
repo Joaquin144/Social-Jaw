@@ -3,7 +3,7 @@ package com.devcommop.myapplication.ui.components.homescreen.comments
 import com.devcommop.myapplication.data.model.Comment
 
 sealed class CommentsEvent {
-    object AddComment: CommentsEvent()
+    data class AddComment(val text: String): CommentsEvent()
     object Reload: CommentsEvent()
 //    sealed class DeleteComment(val comment: Comment): CommentsEvent()
 //    sealed class ReportComment(val comment: Comment): CommentsEvent()
