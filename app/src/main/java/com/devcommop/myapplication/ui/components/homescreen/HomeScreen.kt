@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 fun HomeScreen(
     navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
-    val userFeedState = viewModel.userFeedState.value
+    val userFeedState = viewModel.userFeed.value
     Surface(
         color = Color(0x80FFFFFF)
     ) {

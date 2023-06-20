@@ -3,9 +3,9 @@ package com.devcommop.myapplication.data.model
 import com.devcommop.myapplication.utils.CommonUtils
 
 data class Post(
-    var postId: String = "",
-    var authorId: String = "",
-    var authorUserName: String = "",
+    var postId: String = "post-id",
+    var authorId: String = "author-undefined",
+    var authorUserName: String = "undefined-author",
     var authorFullName: String? = "",
     var authorProfilePictureUrl: String? = null,
     var timestamp: String? = null,//todo: Make it of long type to fetch kLatestPosts

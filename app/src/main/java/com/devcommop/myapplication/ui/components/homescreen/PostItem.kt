@@ -2,6 +2,7 @@ package com.devcommop.myapplication.ui.components.homescreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -41,15 +45,15 @@ import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.data.model.Post
 
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PostItem(
-    post: Post, onLikeButtonClick: () -> Unit, onCommentClick: () -> Unit, onShareClick: () -> Unit
-//    username: String = "John Doe",
-//    userProfileIcon: String? = "null",
-//    timePosted: String = "2 hours ago",
-//    contentDescription: String = "Check out this amazing view!",
-//    postImage: List<String>? = null
+    post: Post = Post(),
+    onLikeButtonClick: () -> Unit = {},
+    onCommentClick: () -> Unit = {},
+    onShareClick: () -> Unit = {}
 ) {
+    val likeButtonClicked = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,12 +144,16 @@ fun PostItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 ActionButton(
                     icon = Icons.Default.FavoriteBorder,
-                    onClick = { onLikeButtonClick() },
-                    count = post.likesCount ?: 0
+                    onClick = {
+                        likeButtonClicked.value = !likeButtonClicked.value
+                        onLikeButtonClick()
+                    },
+                    count = post.likesCount ?: 0,
+                    isActive = likeButtonClicked.value
                 )
                 ActionButton(
                     icon = Icons.Default.Comment,
@@ -162,8 +170,9 @@ fun PostItem(
 
 @Composable
 fun ActionButton(
-    icon: ImageVector, onClick: () -> Unit, count: Long
+    icon: ImageVector, onClick: () -> Unit, count: Long, isActive: Boolean = false
 ) {
+    val backgroundColor = if(isActive) Color.Red else Color.Transparent
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
@@ -172,7 +181,8 @@ fun ActionButton(
                 onClick()
             }) {
         Icon(
-            imageVector = icon, contentDescription = null, tint = Color.Black
+            imageVector = icon, contentDescription = null, tint = Color.Black,
+            modifier = Modifier.background(backgroundColor)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(

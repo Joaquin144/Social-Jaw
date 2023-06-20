@@ -26,8 +26,8 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
         MutableSharedFlow<UiEvent>()   //For some UI events we don't want to show again and again while config changes. eg: Snackbar, Toast, AlertDialog, vibration etc.
     val event = _eventFlow.asSharedFlow()
 
-    private val userFeed = mutableStateOf(UserFeedState(postsList = emptyList()))
-    val userFeedState: State<UserFeedState> = userFeed
+    private val _userFeed = mutableStateOf(UserFeedState(postsList = emptyList()))
+    val userFeed: State<UserFeedState> = _userFeed
 
     private var user = RuntimeQueries.currentUser
 
@@ -76,7 +76,9 @@ class HomeScreenViewModel @Inject constructor(private val repository: Repository
         viewModelScope.launch {
             when (val queryStatus = repository.fetchLatestKPosts(DEFAULT_POSTS_COUNT)) {
                 is Resource.Success -> {
-                    userFeed.value.postsList = queryStatus.data ?: emptyList()
+                    //userFeed.value.postsList = queryStatus.data ?: emptyList()
+                    val postsList = queryStatus.data ?: emptyList()
+                    _userFeed.value = userFeed.value.copy(postsList = postsList)
                     Log.d(TAG, "the list size in fetchPosts(): ${userFeed.value.postsList.size}")
                 }
 
