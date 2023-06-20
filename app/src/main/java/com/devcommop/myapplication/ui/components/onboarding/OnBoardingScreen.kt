@@ -1,5 +1,6 @@
 package com.devcommop.myapplication.ui.components.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,9 +29,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devcommop.myapplication.R
 
+private const val TAG = "##@@OnBoardngScr"
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun OnBoardingScreen() {
+fun OnBoardingScreen(
+    onOnBoardingComplete: () -> Unit = {}
+) {
+    LaunchedEffect(key1 = true){
+        Log.d(TAG, "I am initialised")
+    }
     val onboardingPages = listOf(
         OnboardingPage(
             title = "Welcome to App",
@@ -104,7 +113,8 @@ fun OnBoardingScreen() {
                     if (currentPageIndex.value < onboardingPages.size - 1) {
                         currentPageIndex.value++
                     } else {
-                        // Handle onboarding completed
+                        // Aim: Handle onboarding completed
+                        onOnBoardingComplete()
                     }
                 },
                 modifier = Modifier.padding(end = 16.dp)

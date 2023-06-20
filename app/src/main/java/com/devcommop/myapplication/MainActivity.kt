@@ -37,8 +37,10 @@ import com.devcommop.myapplication.ui.components.authscreen.LoginScreen
 import com.devcommop.myapplication.ui.components.authscreen.RegisterScreen
 import com.devcommop.myapplication.ui.components.authscreen.UserData
 import com.devcommop.myapplication.ui.components.mainscreen.MainScreen
+import com.devcommop.myapplication.ui.components.onboarding.OnBoardingScreen
 import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.screens.AuthScreen
+import com.devcommop.myapplication.ui.screens.OnBoardingScreen
 import com.devcommop.myapplication.ui.theme.MyApplicationTheme
 import com.devcommop.myapplication.utils.Constants
 import com.devcommop.myapplication.utils.Resource
@@ -85,7 +87,7 @@ class MainActivity : ComponentActivity() {
 //                    val viewModel : AuthViewModel = hiltViewModel()
                     val viewModel: AuthViewModel = hiltViewModel()
                     val state by viewModel.state.collectAsState()
-                    var startDestination by remember { mutableStateOf(value = "auth") }
+                    var startDestination by remember { mutableStateOf(value = "onboarding") }
 
                     Log.d(
                         TAG,
@@ -130,12 +132,44 @@ class MainActivity : ComponentActivity() {
                     {
                         // nav-graph composable for navigation inside authentication screens
                         navigation(
+                            route = "onboarding",
+                            startDestination = OnBoardingScreen.SimpleOnboardingScreen.route
+                        ) {
+                            composable(route = OnBoardingScreen.SimpleOnboardingScreen.route) {
+                                //todo: Fix the below block (there's some delay)
+//                                LaunchedEffect(key1 = true) {
+//                                    //Aim: Check if user has already completed the onboarding process
+//                                    Log.d(TAG, "Checking if user has already completed onboarding in past or not")
+//                                    val sharedPreferences = getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+//                                    val onBoardingDoneInPast = sharedPreferences.getBoolean("OnBoardingCompletedInPast", false)
+//                                    if(onBoardingDoneInPast){
+//                                        navController.navigate("auth")
+//                                    }
+//                                }
+                                OnBoardingScreen(
+                                    onOnBoardingComplete = {
+                                        Log.d(TAG, "OnBoarding complete lambda () -> Unit")
+                                        navController.navigate("auth") {
+                                            popUpTo(route = "onboarding") {
+                                                inclusive = true
+                                            }
+                                        }
+                                        val sharedPreferences = getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)
+                                        with(sharedPreferences.edit()){
+                                            putBoolean("OnBoardingCompletedInPast", true)
+                                            apply()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                        navigation(
                             route = "auth",
                             startDestination = AuthScreen.LoginScreen.route
                         ) {
                             composable(route = AuthScreen.LoginScreen.route) {
                                 LaunchedEffect(key1 = state.isSignInSuccessful) {
-                                    //todo: Add user to database
+                                    //Aim: Add user to database
                                     userData = googleAuthUiClient.getSignedInUser()
                                     if (userData != null) {
                                         addUserToDatabase(userData!!)
@@ -227,7 +261,8 @@ class MainActivity : ComponentActivity() {
 
                 is Resource.Error -> {
                     Log.d(TAG, "User creation in Database has failed: " + addStatus.message)
-                    Toast.makeText(this@MainActivity, addStatus.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, addStatus.message, Toast.LENGTH_LONG)
+                        .show()
                     //todo: finish this activity & logout user as this is a serious error
                 }
 
@@ -266,7 +301,10 @@ class MainActivity : ComponentActivity() {
 
     private fun setupNotificationsFunctionality() {
         MyFirebaseMessagingService.sharedPreferences =
-            getSharedPreferences(Constants.BASIC_SHARED_PREF_NAME, Context.MODE_PRIVATE)    //create the SharedPref object
+            getSharedPreferences(
+                Constants.BASIC_SHARED_PREF_NAME,
+                Context.MODE_PRIVATE
+            )    //create the SharedPref object
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.d(TAG, "Fetching FCM registration token failed", task.exception)
