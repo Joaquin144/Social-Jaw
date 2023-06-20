@@ -4,6 +4,7 @@ import com.devcommop.myapplication.data.model.Comment
 
 sealed class CommentsEvent {
     object AddComment: CommentsEvent()
+    object Reload: CommentsEvent()
 //    sealed class DeleteComment(val comment: Comment): CommentsEvent()
 //    sealed class ReportComment(val comment: Comment): CommentsEvent()
 //    sealed class EditComment(val comment: Comment): CommentsEvent()

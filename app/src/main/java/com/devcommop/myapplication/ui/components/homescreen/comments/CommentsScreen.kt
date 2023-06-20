@@ -1,8 +1,10 @@
 package com.devcommop.myapplication.ui.components.homescreen.comments
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,26 +16,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.devcommop.myapplication.data.model.Post
 
-@Preview(showBackground = true, showSystemUi = true)
+private const val TAG = "##@@CommentsScreen"
+
 @Composable
 fun CommentsScreen(
     onClose: () -> Unit = {},
     onCommentSubmit: () -> Unit = {}
 ) {
     val viewModel: CommentsViewModel = hiltViewModel()
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .height(500.dp)) {
         // Cross(X) button on top right corner
         IconButton(
             onClick = { onClose() },
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(16.dp)
+                .padding(8.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -56,12 +62,7 @@ fun CommentsScreen(
         val commentsList = viewModel.commentFeedState.value.commentsList
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(commentsList) { comment ->
-                Text(
-                    text = comment.text,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                )
+                CommentItem(comment)
             }
         }
 
@@ -74,5 +75,11 @@ fun CommentsScreen(
         ) {
             Text(text = "Submit")
         }
+    }
+
+    LaunchedEffect(key1 = CommentsViewModel.currentPostState.value){
+        Log.d(TAG, "PostId for which comments are being fetched is: ${CommentsViewModel.currentPost}")
+        //viewModel.getCommentsOnPost()
+        viewModel.onEvent(CommentsEvent.Reload)
     }
 }
