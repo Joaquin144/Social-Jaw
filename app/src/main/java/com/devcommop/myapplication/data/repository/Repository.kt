@@ -467,8 +467,8 @@ class Repository @Inject constructor(
                 val commentsList = mutableListOf<Comment>()
                 firestore.collection(Constants.COMMENTS_COLLECTION)
                     .whereEqualTo("postId", postId).get().await().map { documentSnapshot ->
-                    commentsList.add(documentSnapshot.toObject(Comment::class.java))
-                }
+                        commentsList.add(documentSnapshot.toObject(Comment::class.java))
+                    }
                 Resource.Success<List<Comment>>(data = commentsList)
             } catch (exception: Exception) {
                 Resource.Error<List<Comment>>(
@@ -571,6 +571,25 @@ class Repository @Inject constructor(
                     .map { documentSnapshot ->
                         postsList.add(documentSnapshot.toObject(Post::class.java))
                     }
+                Resource.Success<List<Post>>(data = postsList)
+            } catch (exception: Exception) {
+                Log.d(TAG, exception.message.toString())
+                Resource.Error<List<Post>>(
+                    message = exception.message
+                        ?: "Unknown error occurred. The post couldn't be fetched"
+                )
+            }
+        }
+    }
+
+    suspend fun getPostsByUserId(userId: String): Resource<List<Post>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val postsList: MutableList<Post> = mutableListOf()
+                firestore.collection(Constants.POSTS_COLLECTION).whereEqualTo("authorId", userId)
+                    .get().await().map { documentSnapshot ->
+                    postsList.add(documentSnapshot.toObject(Post::class.java))
+                }
                 Resource.Success<List<Post>>(data = postsList)
             } catch (exception: Exception) {
                 Log.d(TAG, exception.message.toString())

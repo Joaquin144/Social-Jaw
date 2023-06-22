@@ -1,4 +1,4 @@
-package com.devcommop.myapplication.ui.components.homescreen
+package com.devcommop.myapplication.ui.components.public_profile
 
 import android.util.Log
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,23 +10,26 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.devcommop.myapplication.ui.components.homescreen.PostItem
 import com.devcommop.myapplication.ui.components.homescreen.comments.CommentsScreen
 import com.devcommop.myapplication.ui.components.homescreen.comments.CommentsViewModel
-import com.devcommop.myapplication.ui.screens.OtherScreens
 import kotlinx.coroutines.launch
 
-private const val TAG = "##@@HomeScreen"
+private const val TAG = "##@@PublicUserProfScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
-    navController: NavController, viewModel: HomeScreenViewModel = hiltViewModel()
+fun PublicUserProfileScreen(
+    navController: NavController,
+    userId: String,
+    viewModel: PublicUserProfileViewModel = hiltViewModel()
 ) {
     val bottomSheetState = rememberStandardBottomSheetState(
         initialValue = SheetValue.Hidden, skipHiddenState = false
@@ -58,48 +61,22 @@ fun HomeScreen(
             ) {
                 items(userFeedState.postsList) { post ->
                     PostItem(post = post,
-                        onLikeButtonClick = { viewModel.onEvent(HomeScreenEvents.LikePost(post)) },
+                        onLikeButtonClick = { viewModel.onEvent(PublicUserProfileScreenEvents.LikePost(post)) },
                         onCommentClick = {
                             CommentsViewModel.currentPost = post
                             Log.d(TAG, "changing post for CommentsViewModel = ${post.postId}")
                             scope.launch { bottomSheetState.expand() }
                         },
-                        onShareClick = { viewModel.onEvent(HomeScreenEvents.SharePost(post)) },
-                        onUserProfilePicClick = {
-                            navController.navigate(OtherScreens.PublicUserProfileScreen.route + "/${post.authorId}") {
-                                launchSingleTop = true
-                            }
-                        }
+                        onShareClick = { viewModel.onEvent(PublicUserProfileScreenEvents.SharePost(post)) },
+                        //onUserProfilePicClick = { } --> No navigation from here since all posts are of user itself
                     )
                 }
             }
         }
     }
 
-    /**
-    //---------------Old UI---------------
-    val userFeedState = viewModel.userFeed.value
-    Surface(
-    color = Color(0x80FFFFFF)
-    ) {
-    Column {
-    LazyColumn(
-    modifier = Modifier
-    ) {
-    items(userFeedState.postsList) { post ->
-    PostItemWrapper(post = post,
-    onLikeButtonClick = { viewModel.onEvent(HomeScreenEvents.LikePost(post)) },
-    onShareClick = { viewModel.onEvent(HomeScreenEvents.SharePost(post)) })
-    //                    PostItem(
-    //                        post = post,
-    //                        onLikeButtonClick = { viewModel.onEvent(HomeScreenEvents.LikePost(post)) },
-    //                        onCommentClick = { viewModel.onEvent(HomeScreenEvents.CommentPost(post)) },
-    //                        onShareClick = { viewModel.onEvent(HomeScreenEvents.SharePost(post)) },
-    //                    )
+    LaunchedEffect(key1 = true){
+        viewModel.publicUserId = userId
+        viewModel.fetchPostsForThisUser()
     }
-    }
-    }
-
-    }
-     **/
 }

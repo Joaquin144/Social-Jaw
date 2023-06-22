@@ -51,7 +51,8 @@ fun PostItem(
     post: Post = Post(),
     onLikeButtonClick: () -> Unit = {},
     onCommentClick: () -> Unit = {},
-    onShareClick: () -> Unit = {}
+    onShareClick: () -> Unit = {},
+    onUserProfilePicClick: () -> Unit = {}
 ) {
     val likeButtonClicked = remember { mutableStateOf(false) }
     Card(
@@ -78,6 +79,7 @@ fun PostItem(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
+                        .clickable { onUserProfilePicClick() }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
