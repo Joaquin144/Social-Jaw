@@ -39,13 +39,14 @@ import com.devcommop.myapplication.ui.components.viewmodel.AuthViewModel
 import com.devcommop.myapplication.ui.navigation.MainScreenNavGraph
 import com.devcommop.myapplication.ui.screens.BottomBarScreen
 import com.devcommop.myapplication.ui.screens.CommonInMainScreen
+import com.devcommop.myapplication.ui.screens.TopAppBarScreen
 
 //fun MainScreen (userData: UserData?, onSignOut: () -> Unit, viewModel : AuthViewModel = hiltViewModel()) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun MainScreen( onSignOut: () -> Unit) {
+fun MainScreen(onSignOut: () -> Unit) {
 //    val viewModel : AuthViewModel = hiltViewModel()
     val viewModel: AuthViewModel = viewModel(LocalContext.current as ComponentActivity)
 
@@ -55,7 +56,7 @@ fun MainScreen( onSignOut: () -> Unit) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
-            TopBarSection(navController , onSignOut)
+            TopBarSection(navController, onSignOut)
         },
         bottomBar = { BottomBarSection(navController) },
     ) { innerPadding ->
@@ -101,19 +102,22 @@ fun TopBarSection(
                     .size(32.dp)
                     .padding(end = 4.dp)
                     .clickable {
-                        navController.navigate("search_screen")
+                        navController.navigate(TopAppBarScreen.SearchScreen.route) {
+                            launchSingleTop = true
+                        }
                     }
             )
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_comment_24),
-                contentDescription = "Message",
-                modifier = Modifier
-                    .size(32.dp)
-                    .padding(end = 4.dp)
-                    .clickable {
-                        navController.navigate("message_screen")
-                    }
-            )
+            //todo: Show message icon when MessageScreen is implemented
+//            Icon(
+//                painter = painterResource(id = R.drawable.baseline_comment_24),
+//                contentDescription = "Message",
+//                modifier = Modifier
+//                    .size(32.dp)
+//                    .padding(end = 4.dp)
+//                    .clickable {
+//                        navController.navigate("message_screen")
+//                    }
+//            )
         },
         scrollBehavior = scrollBehavior // scrollBehavior
     )

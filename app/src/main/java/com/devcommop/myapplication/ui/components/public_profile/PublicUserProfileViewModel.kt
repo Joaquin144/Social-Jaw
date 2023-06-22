@@ -1,11 +1,13 @@
 package com.devcommop.myapplication.ui.components.public_profile
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devcommop.myapplication.data.local.RuntimeQueries
+import com.devcommop.myapplication.data.model.User
 import com.devcommop.myapplication.data.repository.Repository
 import com.devcommop.myapplication.ui.components.homescreen.UserFeedState
 import com.devcommop.myapplication.utils.Constants
@@ -27,6 +29,9 @@ class PublicUserProfileViewModel @Inject constructor(private val repository: Rep
     private val _userFeed = mutableStateOf(UserFeedState(postsList = emptyList()))
     val userFeed: State<UserFeedState> = _userFeed
 
+    private val _publicUser: MutableState<User?> = mutableStateOf(null)
+    val publicUser: State<User?> = _publicUser
+
     private var user = RuntimeQueries.currentUser
     var publicUserId: String = "null"
 
@@ -40,6 +45,28 @@ class PublicUserProfileViewModel @Inject constructor(private val repository: Rep
                 is Resource.Success -> {
                     val postsList = queryStatus.data ?: emptyList()
                     _userFeed.value = userFeed.value.copy(postsList = postsList)
+                    Log.d(TAG, "the list size in fetchPosts(): ${userFeed.value.postsList.size}")
+                }
+
+                is Resource.Error -> {
+                    _eventFlow.emit(
+                        UiEvent.ShowSnackbar(
+                            message = queryStatus.message ?: Constants.DEFAULT_ERROR_MESSAGE
+                        )
+                    )
+                }
+
+                is Resource.Loading -> {}
+            }
+        }
+    }
+
+    fun fetchUserData() {
+        viewModelScope.launch {
+            when (val queryStatus = repository.getUserById(uid = publicUserId)) {
+                is Resource.Success -> {
+                    val user = queryStatus.data
+                    _publicUser.value = user//todo: is it good practice?
                     Log.d(TAG, "the list size in fetchPosts(): ${userFeed.value.postsList.size}")
                 }
 

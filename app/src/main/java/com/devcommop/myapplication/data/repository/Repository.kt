@@ -18,8 +18,10 @@ import com.devcommop.myapplication.utils.ModelUtils
 import com.devcommop.myapplication.utils.NotificationApiInstance
 import com.devcommop.myapplication.utils.NotificationUtils
 import com.devcommop.myapplication.utils.Resource
+import com.devcommop.myapplication.utils.StringUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
@@ -473,7 +475,7 @@ class Repository @Inject constructor(
             } catch (exception: Exception) {
                 Resource.Error<List<Comment>>(
                     message = exception.message
-                        ?: "Unknown error occurred. The post couldn't be liked"
+                        ?: "Unknown error occurred. This post's comments could not be fetched"
                 )
             }
         }
@@ -512,7 +514,7 @@ class Repository @Inject constructor(
             } catch (exception: Exception) {
                 Resource.Error<Comment>(
                     message = exception.message
-                        ?: "Unknown error occurred. The post couldn't be liked"
+                        ?: "Unknown error occurred. The comment couldn't be added"
                 )
             }
         }
@@ -576,7 +578,7 @@ class Repository @Inject constructor(
                 Log.d(TAG, exception.message.toString())
                 Resource.Error<List<Post>>(
                     message = exception.message
-                        ?: "Unknown error occurred. The post couldn't be fetched"
+                        ?: "Unknown error occurred. The posts couldn't be fetched"
                 )
             }
         }
@@ -595,7 +597,7 @@ class Repository @Inject constructor(
                 Log.d(TAG, exception.message.toString())
                 Resource.Error<List<Post>>(
                     message = exception.message
-                        ?: "Unknown error occurred. The post couldn't be fetched"
+                        ?: "Unknown error occurred. The posts of the given user couldn't be fetched"
                 )
             }
         }
@@ -806,7 +808,39 @@ class Repository @Inject constructor(
             }
         }
 
-    /*
+    suspend fun searchUsers(query: String): Resource<List<User>>{
+        return withContext(Dispatchers.IO){
+            try{
+                val upperBound = StringUtils.increaseLastCharByOne(query)
+                val usersList = mutableListOf<User>()
+                firestore.collection(Constants.USERS_COLLECTION).where(
+                    Filter.or(
+                        Filter.and(
+                            Filter.greaterThanOrEqualTo("fullName", query),
+                            Filter.lessThan("fullName", upperBound)
+                        ),
+//                        Filter.and(
+//                            Filter.greaterThanOrEqualTo("userName", query),
+//                            Filter.lessThan("userName", upperBound)
+//                        ),
+                        Filter.equalTo("city", query),
+                        Filter.equalTo("company", query),
+                    )
+                ).get().await().map { documentSnapshot ->
+                    usersList.add(documentSnapshot.toObject(User::class.java))
+                }
+                Resource.Success<List<User>>(data = usersList)
+            } catch (exception: Exception) {
+                Log.d(TAG, "Users search failed $exception")
+                Resource.Error<List<User>>(
+                    message = exception.message ?: "Some unknown error occurred. Please try again"
+                )
+            }
+        }
+    }
+}
+
+/*
     private fun sendNotification(
         topic: String,
         notificationTitle: String,
@@ -819,4 +853,3 @@ class Repository @Inject constructor(
             .addData("topic", topic)
             .
     }*/
-}

@@ -11,8 +11,7 @@ import androidx.navigation.navigation
 import com.devcommop.myapplication.ui.components.createpost.CreatePostScreen
 import com.devcommop.myapplication.ui.components.editprofile.EditUserProfileScreen
 import com.devcommop.myapplication.ui.components.homescreen.HomeScreen
-import com.devcommop.myapplication.ui.components.mainscreen.MessageScreen
-import com.devcommop.myapplication.ui.components.mainscreen.SearchScreen
+import com.devcommop.myapplication.ui.components.searchscreen.SearchScreen
 import com.devcommop.myapplication.ui.components.shorts.ShortsScreen
 import com.devcommop.myapplication.ui.components.mainscreen.UserProfileScreen
 import com.devcommop.myapplication.ui.components.public_profile.PublicUserProfileScreen
@@ -68,11 +67,11 @@ fun MainScreenNavGraph(
                 )
             }
         }
-        composable(TopAppBarScreen.messageScreen.route) {
-            MessageScreen()
-        }
+//        composable(TopAppBarScreen.messageScreen.route) {
+//            MessageScreen()
+//        }
         composable(TopAppBarScreen.SearchScreen.route) {
-            SearchScreen()
+            SearchScreen(navController = navHostController)
         }
         composable(CommonInMainScreen.EditUserProfileScreen.route) {
             EditUserProfileScreen()
