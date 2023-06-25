@@ -9,6 +9,8 @@ The Social Media App is a platform where users can connect, share updates, and e
 ***Try latest Social-Jaw app apk from below 👇***
 
 [![Social-Jaw](https://github.com/pareekdevansh/Social-Jaw/assets/80385154/ff67b7df-2718-4c1b-93dc-59cfa025a54a)](https://github.com/pareekdevansh/Social-Jaw/releases/download/android-app/release.version.1.apk)
+[Release](https://github.com/pareekdevansh/Social-Jaw/releases/download/android-app/release.version.1.apk)
+
 
 <br />
 
@@ -55,8 +57,8 @@ The Social Media App is a platform where users can connect, share updates, and e
 |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/50bf06ab-f290-45ad-8fbe-75f1ecb9f75e)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/a2a711a3-35ea-4f1f-9253-37ca511ae5f5)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/248177c7-9eea-4b79-a5bc-48a31c9e417a)
 <br />
 
-## Demo Video
-<img src="https://github.com/pareekdevansh/Social-Jaw/assets/80385154/ffce81d8-449c-48b4-81e3-b752a91518d9" alt="Image Preview" height="80">
+## [Demo Video](https://youtu.be/gNEl4rkXrrE)
+<img src="https://github.com/pareekdevansh/Social-Jaw/assets/80385154/ffce81d8-449c-48b4-81e3-b752a91518d9" alt="Image Preview" height="80" href="https://youtu.be/gNEl4rkXrrE">
 
 ## Architecture
 
