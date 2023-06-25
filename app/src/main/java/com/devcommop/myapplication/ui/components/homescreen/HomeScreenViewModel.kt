@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "##@@HomeScreenVM"
-private const val DEFAULT_POSTS_COUNT = 100L
+private const val DEFAULT_POSTS_COUNT = 500L
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(private val repository: Repository) : ViewModel() {

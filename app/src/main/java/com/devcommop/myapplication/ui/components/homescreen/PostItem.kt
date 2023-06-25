@@ -1,5 +1,6 @@
 package com.devcommop.myapplication.ui.components.homescreen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,8 +30,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +47,10 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.devcommop.myapplication.data.model.Post
+import java.text.SimpleDateFormat
+import java.util.Date
 
+private const val TAG = "##@@PostItem"
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -54,6 +61,20 @@ fun PostItem(
     onShareClick: () -> Unit = {},
     onUserProfilePicClick: () -> Unit = {}
 ) {
+    var timestamp by remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(key1 = true) {
+        if (post.timestamp != null) {
+            try {
+                val resultdate = Date(post.timestamp!!.toLong())
+                val simpleDateFormat = SimpleDateFormat.getDateTimeInstance()
+                timestamp = simpleDateFormat.format(resultdate)
+            } catch (exception: Exception){
+                Log.d(TAG, "failed to set timestamp for: ${post.timestamp} with exception: ${exception.message}")
+            }
+        }
+    }
     val likeButtonClicked = remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
@@ -90,7 +111,7 @@ fun PostItem(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = post.timestamp.toString(),
+                        text = timestamp,//post.timestamp.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.DarkGray
                     )
@@ -174,7 +195,7 @@ fun PostItem(
 fun ActionButton(
     icon: ImageVector, onClick: () -> Unit, count: Long, isActive: Boolean = false
 ) {
-    val backgroundColor = if(isActive) Color.Red else Color.Transparent
+    val backgroundColor = if (isActive) Color.Red else Color.Transparent
     Row(verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier

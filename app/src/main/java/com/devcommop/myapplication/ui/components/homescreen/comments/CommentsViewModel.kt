@@ -86,7 +86,9 @@ class CommentsViewModel @Inject constructor(private val repository: Repository) 
                             when(addStatus){
                                 is Resource.Error -> {}
                                 is Resource.Loading -> {}
-                                is Resource.Success -> { }
+                                is Resource.Success -> {
+                                    getCommentsOnPost(postId = currentPost.postId)//refresh the comments
+                                }
                             }
                         }
                     }
