@@ -30,23 +30,23 @@ The Social Media App is a platform where users can connect, share updates, and e
 
 |   HomeScreen🏡    | Dark Mode support🌛   |   Post Comments💬   
 |---	|---	|---
-|  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/9195b18b-dd96-472c-83ae-e6a27df5cc69)    |  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/511dd3f9-c467-4f5a-940b-58f2987edbaa)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/77c2bd17-5315-43ea-834e-b58af6ce09cb)    
+|  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/90f9e70f-b3a5-46e0-a076-08763d00d7ee)    |  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/9964d7a9-66c0-42cd-925b-ab3e80a64e81)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/76c30947-69d3-4946-b6a0-5fe385511866)    
 
 |   Scroll Shorts📹  |   More Shorts🎥    | Create Posts📤   |
 |---    |---	|---	|
-|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/4f50f49e-0590-43bb-904a-4701993b399e)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/3e3be1f9-a4b2-4641-af08-85f571348f6f)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/af0e9046-27ab-4bc8-a2f0-fdd0599b806f)
+|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/1d5d3abb-4258-4de3-8560-895e5e3f9a25)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/e606dbbb-64c1-4d87-b956-1ec938ee25f3)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/4efda8ba-cbc5-4e98-aa2e-945e7a7ca9e8))
 
 |   Control Permissions👮‍♂️    | User Profile🪞    |   User Settings ⚙️  
 |---	|---	|---
-|  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/a9d0ec8d-0038-4b0a-ad6e-1dfd48feff68)    |  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/5da85f6d-1ef1-456c-825d-9c2d12eb8bcd)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/711945cf-2d65-4a05-9f9f-b7c272150050)    
+|  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/60c39ae1-5fec-403e-8df9-cbb620c5832e)    |  ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/83b1ef74-0f0a-4cd8-811d-e68ecba72cae)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/1851b59f-28cf-41b6-a345-f9bc8318babd)    
 
 |   Notification Settings 🔔 |   Notification 📩   | Update Details 📝  |
 |---    |---	|---	|
-|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/c858b1fa-da5e-43d0-89cb-9b60abbb0167)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/291d91a4-b4a4-4d41-b2d7-2ef318188834)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/5e644938-e1e3-45ea-9626-47262b66d408)
+|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/080a9056-8295-4594-82d6-fa136ab7a756)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/35e6fae0-b405-4ee3-98c0-2432e288e7ab)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/5d17d9e6-81b9-42d1-8e3f-318913a1914b)
 
 |   Switch Themes 🕚 |   Privacy Policy 🔐   | Search Users 🔎  |
 |---    |---	|---	|
-|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/c1fe3771-8d0b-4cf9-8de8-82e0cd1922e0)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/8ce78105-1a4b-419f-8819-cacb2e7a19f6)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/0d89693d-fc4b-40d8-85d8-cc850eef76d0)
+|   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/50bf06ab-f290-45ad-8fbe-75f1ecb9f75e)    |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/a2a711a3-35ea-4f1f-9253-37ca511ae5f5)      |   ![](https://github.com/Joaquin144/CoinTrivia/assets/80385154/248177c7-9eea-4b79-a5bc-48a31c9e417a)
 <br />
 
 ## Demo Video
