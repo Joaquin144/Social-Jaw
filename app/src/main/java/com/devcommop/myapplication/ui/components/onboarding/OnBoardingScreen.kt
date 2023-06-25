@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devcommop.myapplication.R
+import com.devcommop.myapplication.utils.Constants
 
 private const val TAG = "##@@OnBoardngScr"
 
@@ -39,20 +40,21 @@ fun OnBoardingScreen(
     LaunchedEffect(key1 = true){
         Log.d(TAG, "I am initialised")
     }
+    val list = Constants.ON_BOARDING_SCREEN_CONTENT
     val onboardingPages = listOf(
         OnboardingPage(
             title = "Welcome to App",
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            description = list[0],
             imageRes = R.drawable.baseline_comment_24
         ),
         OnboardingPage(
-            title = "Discover New Features",
-            description = "Duis at lacus sit amet mauris commodo varius ut eget magna.",
+            title = "Connect with Like-Minded People",
+            description = list[1],
             imageRes = R.drawable.baseline_account_circle_24
         ),
         OnboardingPage(
-            title = "Get Started",
-            description = "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.",
+            title = "Customize Your Profile",
+            description = list[2],
             imageRes = R.drawable.baseline_thumb_up_24
         )
     )

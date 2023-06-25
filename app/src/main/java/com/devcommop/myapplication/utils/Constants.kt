@@ -32,6 +32,7 @@ object Constants {
 
     //App Constants
     const val DEFAULT_ERROR_MESSAGE = "Some unknown error occurred. Please try again."
+    val ON_BOARDING_SCREEN_CONTENT = listOf("👋 Welcome to SocialJaw, the ultimate social media experience. We're thrilled to have you join our vibrant community of creators, influencers, and social enthusiasts.", "🌟 SocialJaw is all about connections. Connect with like-minded individuals who share your interests, passions, and goals. Build your network, collaborate on projects, and inspire each other to reach new heights.", "🎨 Make your profile shine! Customize your profile on SocialJaw to reflect your unique personality. Choose a profile picture that represents you, write a captivating bio, and showcase your best work. 📷 Share your photos, videos, and moments that define who you are. Let your creativity flow and create a profile that tells your story.")
 
     //Help and Feedback
     val HELP_AND_FEEDBACK_EMAILS = arrayOf("contact@socailjaw.com")

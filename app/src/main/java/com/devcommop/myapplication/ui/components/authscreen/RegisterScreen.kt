@@ -72,7 +72,7 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_launcher_foreground),
+            painter = painterResource(R.drawable.app_logo_j),
             contentDescription = "App Logo",
             modifier = Modifier
                 .size(160.dp)
