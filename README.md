@@ -88,7 +88,7 @@ The app utilizes the following architectural components:
 
 To run the app locally, follow these steps:
 
-1. Clone the repository: (https://github.com/pareekdevansh/Social-Jaw/new/master)
+1. Clone the repository: (https://github.com/Joaquin144/Social-Jaw.git)
 
 2. Open the project in Android Studio.
 
@@ -108,5 +108,5 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Co-Developed By
 
-- [Devansh Pareek](https://github.com/pareekdevansh)
 - [Vibhu](https://github.com/Joaquin144)
+- [Devansh Pareek](https://github.com/pareekdevansh)
