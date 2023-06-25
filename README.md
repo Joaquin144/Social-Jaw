@@ -1,10 +1,16 @@
 # Social-Jaw
 
-<img src="https://github.com/Joaquin144/CoinTrivia/assets/80385154/975453a2-5276-44f8-9b89-2a1ca895d9ed" height="200">
+<img src="https://github.com/pareekdevansh/Social-Jaw/assets/80385154/eb8a4901-fc9d-4e6f-8d2f-ad84a9780997" height="200">
 
 ## Description
 
 The Social Media App is a platform where users can connect, share updates, and engage with each other. It allows users to create profiles, post updates, follow other users, like and comment on posts, and stay connected with their social network.
+
+***Try latest Social-Jaw app apk from below 👇***
+
+[![Social-Jaw](https://github.com/pareekdevansh/Social-Jaw/assets/80385154/ff67b7df-2718-4c1b-93dc-59cfa025a54a)](https://github.com/pareekdevansh/Social-Jaw/releases/download/android-app/release.version.1.apk)
+
+<br />
 
 ## Features
 
@@ -50,10 +56,7 @@ The Social Media App is a platform where users can connect, share updates, and e
 <br />
 
 ## Demo Video
-
-Check out the demo video of the Social Media app on YouTube:
-
-[![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID_HERE)
+<img src="https://github.com/pareekdevansh/Social-Jaw/assets/80385154/ffce81d8-449c-48b4-81e3-b752a91518d9" alt="Image Preview" height="80">
 
 ## Architecture
 
